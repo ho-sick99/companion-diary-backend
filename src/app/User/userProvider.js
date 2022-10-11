@@ -5,22 +5,21 @@ const userDao = require("./userDao");
 
 // Provider: Read 비즈니스 로직 처리
 
-exports.retrieveUserList = async function (email) {
-  if (!email) {
-    const connection = await pool.getConnection(async (conn) => conn);
-    const userListResult = await userDao.selectUser(connection);
-    connection.release();
+exports.retrieveUserIdWithEmail = async function (email) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const userListResult = await userDao.selectUserIdWhereEmail(connection, email);
+  connection.release();
 
-    return userListResult;
-
-  } else {
-    const connection = await pool.getConnection(async (conn) => conn);
-    const userListResult = await userDao.selectUserEmail(connection, email);
-    connection.release();
-
-    return userListResult;
-  }
+  return userListResult;
 };
+
+exports.joinUser = async function (email, nickname, profile_image) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const joinUserResult = await userDao.insertIntoUser(connection, email, nickname, profile_image);
+  connection.release();
+
+  return joinUserResult;
+}
 
 exports.retrieveUser = async function (userIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
@@ -46,6 +45,7 @@ exports.passwordCheck = async function (selectUserPasswordParams) {
       selectUserPasswordParams
   );
   connection.release();
+
   return passwordCheckResult[0];
 };
 

@@ -1,22 +1,21 @@
-// 모든 유저 조회
-async function selectUser(connection) {
-  const selectUserListQuery = `
-                SELECT email, nickname 
-                FROM UserInfo;
-                `;
-  const [userRows] = await connection.query(selectUserListQuery);
-  return userRows;
+const mysql = require('mysql2/promise');
+
+// 이메일로 회원 ID 조회
+async function selectUserIdWhereEmail(connection, email) {
+  // const selectUserEmailQuery = `SELECT EXISTS (SELECT user_id from COMPAION_DIARY_DB.user WHERE user_email = ? LIMIT 1) AS SUCCESS;`
+
+  const query = mysql.format(`SELECT user_id FROM COMPAION_DIARY_DB.user WHERE user_email=?;`, [email]);
+  const Rows = await connection.query(query);
+
+  return Rows;
 }
 
-// 이메일로 회원 조회
-async function selectUserEmail(connection, email) {
-  const selectUserEmailQuery = `
-                SELECT email, nickname 
-                FROM UserInfo 
-                WHERE email = ?;
-                `;
-  const [emailRows] = await connection.query(selectUserEmailQuery, email);
-  return emailRows;
+// 회원 가입
+async function insertIntoUser(connection, email, nickname, profile_image) {
+  const query = mysql.format(`INSERT INTO COMPAION_DIARY_DB.user(user_email, user_nickname, profile_img_url) VALUES(?, ?, ?);`, [email, nickname, profile_image]);
+  const Rows = await connection.query(query);
+
+  return Rows;
 }
 
 // userId 회원 조회
@@ -28,20 +27,6 @@ async function selectUserIdx(connection, userIdx) {
                  `;
   const [userRow] = await connection.query(selectUserIdxQuery, userIdx);
   return userRow;
-}
-
-// 유저 생성
-async function insertUserInfo(connection, insertUserInfoParams) {
-  const insertUserInfoQuery = `
-        INSERT INTO UserInfo(email, password, nickname)
-        VALUES (?, ?, ?);
-    `;
-  const insertUserInfoRow = await connection.query(
-    insertUserInfoQuery,
-    insertUserInfoParams
-  );
-
-  return insertUserInfoRow;
 }
 
 // 패스워드 체크
@@ -82,10 +67,9 @@ async function updateUserInfo(connection, id, nickname) {
 
 
 module.exports = {
-  selectUser,
-  selectUserEmail,
+  selectUserIdWhereEmail,
   selectUserIdx,
-  insertUserInfo,
+  insertIntoUser,
   selectUserPassword,
   selectUserAccount,
   updateUserInfo,

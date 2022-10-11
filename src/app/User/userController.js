@@ -7,134 +7,46 @@ const {response, errResponse} = require("../../../config/response");
 const regexEmail = require("regex-email");
 const {emit} = require("nodemon");
 
-/**
- * API No. 0
- * API Name : 테스트 API
- * [GET] /app/test
- */
-// exports.getTest = async function (req, res) {
-//    return res.send(response(baseResponse.SUCCESS))
-// }
+exports.home = async function (req, res) {
+    // console.log(JSON.stringify(req));
+    return res.send("루트 페이지");
+}
 
-/**
+/*
  * API No. 1
- * API Name : 유저 생성 (회원가입) API
- * [POST] /app/users
+ * API Name : 카카오 Access Token으로 유저 정보 확인 API => (회원가입) => 로그인(JWT 리턴)
+ * [GET] /auth/kakao/callback
  */
-exports.postUsers = async function (req, res) {
+exports.getSignIn = async function (req, res) {
+    console.log("\n----------------------------------------------------------");
+    console.log(JSON.stringify(req.headers['x-access-token']));
+    console.log("----------------------------------------------------------");
 
-    /**
-     * Body: email, password, nickname
-     */
-    const {email, password, nickname} = req.body;
+    let token = req.headers['x-access-token'];
+    const result = await userService.SignIn(token);
 
-    // 빈 값 체크
-    if (!email)
-        return res.send(response(baseResponse.SIGNUP_EMAIL_EMPTY));
+    // return 값 확인
+    console.log("\n----------- return data -------------");
+    console.log(result);
+    console.log("-------------------------------------");
 
-    // 길이 체크
-    if (email.length > 30)
-        return res.send(response(baseResponse.SIGNUP_EMAIL_LENGTH));
-
-    // 형식 체크 (by 정규표현식)
-    if (!regexEmail.test(email))
-        return res.send(response(baseResponse.SIGNUP_EMAIL_ERROR_TYPE));
-
-    // 기타 등등 - 추가하기
-
-
-    const signUpResponse = await userService.createUser(
-        email,
-        password,
-        nickname
-    );
-
-    return res.send(signUpResponse);
-};
-
-/**
- * API No. 2
- * API Name : 유저 조회 API (+ 이메일로 검색 조회)
- * [GET] /app/users
- */
-exports.getUsers = async function (req, res) {
-
-    /**
-     * Query String: email
-     */
-    const email = req.query.email;
-
-    if (!email) {
-        // 유저 전체 조회
-        const userListResult = await userProvider.retrieveUserList();
-        return res.send(response(baseResponse.SUCCESS, userListResult));
-    } else {
-        // 유저 검색 조회
-        const userListByEmail = await userProvider.retrieveUserList(email);
-        return res.send(response(baseResponse.SUCCESS, userListByEmail));
-    }
+    return res.send(result);
 };
 
 /*
-    API No. 1.3
-    API Name: 유저 상세 조회 API
-    [GET] /users/:userIdx
-*/
-exports.getUser = async function (req, res) {
-    /*
-        Path Variable: userIdx
-    */
-    const userIdx = req.params.userIdx;
-
-    // validation
-    if(!userIdx) {
-        return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
-    } 
-    if (userIdx <= 0) {
-        return res.send(errResponse(baseResponse.USER_USERIDX_LENGTH));
-    }
-
-    const userIdxResult = await userProvider.retrieveUser(userIdx);
-    return res.send(response(baseResponse.SUCCESS, userIdxResult))
-}
-
-/**
- * API No. 3
- * API Name : 특정 유저 조회 API
- * [GET] /app/users/{userId}
+ * API No. 2
+ * API Name : JWT 토큰 검증 API
+ * [GET] /app/auto-login
  */
-exports.getUserById = async function (req, res) {
+ exports.check = async function (req, res) {
+    console.log("\n---- JWT Decode 정보 출력 ----");
+    console.log(JSON.stringify(req.verifiedToken));
+    // const userId = req.verifiedToken.userId;
+    // console.log(userId);
+    console.log("------------------------------");
 
-    /**
-     * Path Variable: userId
-     */
-    const userId = req.params.userId;
-
-    if (!userId) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
-
-    const userByUserId = await userProvider.retrieveUser(userId);
-    return res.send(response(baseResponse.SUCCESS, userByUserId));
+    return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
 };
-
-
-// TODO: After 로그인 인증 방법 (JWT)
-/**
- * API No. 4
- * API Name : 로그인 API
- * [POST] /app/login
- * body : email, passsword
- */
-exports.login = async function (req, res) {
-
-    const {email, password} = req.body;
-
-    // TODO: email, password 형식적 Validation
-
-    const signInResponse = await userService.postSignIn(email, password);
-
-    return res.send(signInResponse);
-};
-
 
 /**
  * API No. 5
@@ -143,40 +55,33 @@ exports.login = async function (req, res) {
  * path variable : userId
  * body : nickname
  */
-exports.patchUsers = async function (req, res) {
+// exports.patchUsers = async function (req, res) {
 
-    // jwt - userId, path variable :userId
+//     // jwt - userId, path variable :userId
 
-    const userIdFromJWT = req.verifiedToken.userId
+//     const userIdFromJWT = req.verifiedToken.userId
 
-    const userId = req.params.userId;
-    const nickname = req.body.nickname;
+//     const userId = req.params.userId;
+//     const nickname = req.body.nickname;
 
-    if (userIdFromJWT != userId) {
-        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
-    } else {
-        if (!nickname) return res.send(errResponse(baseResponse.USER_NICKNAME_EMPTY));
+//     if (userIdFromJWT != userId) {
+//         res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
+//     } else {
+//         if (!nickname) return res.send(errResponse(baseResponse.USER_NICKNAME_EMPTY));
 
-        const editUserInfo = await userService.editUser(userId, nickname)
-        return res.send(editUserInfo);
-    }
-};
+//         const editUserInfo = await userService.editUser(userId, nickname)
+//         return res.send(editUserInfo);
+//     }
+// };
 
+// /** JWT 토큰 검증 API
+//  * [GET] /app/auto-login
+//  */
+//  exports.check = async function (req, res) {
+//     console.log("--------- JWT 토큰 검증 ----------");
+//     console.log(JSON.stringify(req));
 
-
-
-
-
-
-
-
-
-
-/** JWT 토큰 검증 API
- * [GET] /app/auto-login
- */
-exports.check = async function (req, res) {
-    const userIdResult = req.verifiedToken.userId;
-    console.log(userIdResult);
-    return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
-};
+//     const userIdResult = req.verifiedToken.userId;
+//     console.log(userIdResult);
+//     return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
+// };
