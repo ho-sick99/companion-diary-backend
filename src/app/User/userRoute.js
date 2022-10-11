@@ -11,7 +11,7 @@ module.exports = function(app){
 
     // TODO: 자동로그인 API (JWT 검증 및 Payload 내뱉기)
     // JWT 검증 API
-    app.get('/auth/jwt', jwtMiddleware, user.check);
+    app.get('/auth/jwt', jwtMiddleware, user.jwtCheck);
 
     // TODO: After 로그인 인증 방법 (JWT)
     // 로그인 하기 API (JWT 생성)

@@ -33,7 +33,7 @@ const jwtMiddleware = (req, res, next) => {
                 //비밀 번호 바뀌었을 때 검증 부분 추가 할 곳
                 req.verifiedToken = verifiedToken;
                 next();
-            }).catch(onError);
+            });
 
         } catch(err) {
             console.log("\n----------------------------------------------------------");

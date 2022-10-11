@@ -18,11 +18,12 @@ exports.home = async function (req, res) {
  * [GET] /auth/kakao/callback
  */
 exports.getSignIn = async function (req, res) {
-    console.log("\n----------------------------------------------------------");
-    console.log(JSON.stringify(req.headers['x-access-token']));
-    console.log("----------------------------------------------------------");
+    // console.log("\n----------------------------------------------------------");
+    // console.log(JSON.stringify(req.headers['x-access-token']));
+    // console.log("----------------------------------------------------------");
 
     let token = req.headers['x-access-token'];
+
     const result = await userService.SignIn(token);
 
     // return 값 확인
@@ -38,12 +39,22 @@ exports.getSignIn = async function (req, res) {
  * API Name : JWT 토큰 검증 API
  * [GET] /app/auto-login
  */
- exports.check = async function (req, res) {
+ exports.jwtCheck = async function (req, res) {
     console.log("\n---- JWT Decode 정보 출력 ----");
-    console.log(JSON.stringify(req.verifiedToken));
-    // const userId = req.verifiedToken.userId;
-    // console.log(userId);
+    const userId = req.verifiedToken.userId;
+    const userName = req.verifiedToken.userName;
+    const userProfileImage = req.verifiedToken.userProfileImage;
+    const userEmail = req.verifiedToken.userEmail;
+    console.log(userId);
+    console.log(userName);
+    console.log(userProfileImage);
+    console.log(userEmail);
     console.log("------------------------------");
+
+    // return 값 확인
+    console.log("\n----------- return data -------------");
+    console.log(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
+    console.log("-------------------------------------");
 
     return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
 };
