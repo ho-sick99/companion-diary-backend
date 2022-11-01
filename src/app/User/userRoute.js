@@ -1,39 +1,21 @@
 module.exports = function(app){
     const user = require('./userController');
     const jwtMiddleware = require('../../../config/jwtMiddleware');
-    const axios = require('axios');
 
-    // 0. 테스트 API
-    app.get('/', user.home);
+    // 1.1. 사용자 정보 가져오기(닉네임, 이메일, 프로필 사진)
+    app.get('/users', jwtMiddleware, user.getUsers);
 
-    // 1. 로그인
-    app.get('/auth/kakao/callback', user.getSignIn);
+    // 1.4 동물/식물 리스트 불러오기
+    app.get('/users/pet', jwtMiddleware, user.getUsersPet);
 
-    // TODO: 자동로그인 API (JWT 검증 및 Payload 내뱉기)
-    // JWT 검증 API
-    app.get('/auth/jwt', jwtMiddleware, user.jwtCheck);
+    // 1.5 동물/식물 추가
+    app.post('/users/pet', jwtMiddleware, user.postUsersPet);
 
-    // TODO: After 로그인 인증 방법 (JWT)
-    // 로그인 하기 API (JWT 생성)
-    // app.post('/app/login', user.login);
+    // 1.6 동물/식물 수정
+    app.put('/users/pet/:petId', jwtMiddleware, user.putUsersPet);
 
-    // 2. 유저 조회 API (+ 검색)
-    // app.get('/app/users',user.getUsers); 
-
-    // 3. 특정 유저 조회 API
-    // app.get('/app/users/:userId', user.getUserById);
+    // 1.7 동물/식물 삭제
+    app.delete('/users/pet/:petId', jwtMiddleware, user.delectUsersPet);
 
 
-    // 회원 정보 수정 API (JWT 검증 및 Validation - 메소드 체이닝 방식으로 jwtMiddleware 사용)
-    // app.patch('/app/users/:userId', jwtMiddleware, user.patchUsers)
-
-    // 1.3 유저 상세 조회 api
-    // app.get('/users/:userIdx', user.getUser);
 };
-
-
-// TODO: 자동로그인 API (JWT 검증 및 Payload 내뱉기)
-// JWT 검증 API
-// app.get('/app/auto-login', jwtMiddleware, user.check);
-
-// TODO: 탈퇴하기 API

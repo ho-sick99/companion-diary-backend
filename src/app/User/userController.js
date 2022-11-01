@@ -7,24 +7,35 @@ const {response, errResponse} = require("../../../config/response");
 const regexEmail = require("regex-email");
 const {emit} = require("nodemon");
 
-exports.home = async function (req, res) {
-    // console.log(JSON.stringify(req));
-    return res.send("루트 페이지");
-}
-
 /*
  * API No. 1
- * API Name : 카카오 Access Token으로 유저 정보 확인 API => (회원가입) => 로그인(JWT 리턴)
- * [GET] /auth/kakao/callback
+ * API Name : 사용자 정보 가져오기
+ * [GET] /users
  */
-exports.getSignIn = async function (req, res) {
-    // console.log("\n----------------------------------------------------------");
-    // console.log(JSON.stringify(req.headers['x-access-token']));
-    // console.log("----------------------------------------------------------");
+exports.getUsers = async function (req, res) {
+    const user_email = req.verifiedToken.userEmail;
+    const user_nickname = req.verifiedToken.userNicname;
+    const user_profile_img = req.verifiedToken.userProfileImage;
 
-    let token = req.headers['x-access-token'];
+    let ob = {user_email : user_email, user_nickname : user_nickname, user_profile_img : user_profile_img};
 
-    const result = await userService.SignIn(token);
+    // return 값 확인
+    console.log("\n----------- return data -------------");
+    console.log(response(baseResponse.SUCCESS, ob));
+    console.log("-------------------------------------");
+
+    return res.send(response(baseResponse.SUCCESS, ob));
+};
+
+/*
+ * API No. 4
+ * API Name : 동물/식물 리스트 불러오기
+ * [GET] /users/pet
+ */
+exports.getUsersPet = async function (req, res) {
+    const user_id = req.verifiedToken.userId;
+
+    const result = await userService.getPetList(user_id);
 
     // return 값 확인
     console.log("\n----------- return data -------------");
@@ -35,64 +46,69 @@ exports.getSignIn = async function (req, res) {
 };
 
 /*
- * API No. 2
- * API Name : JWT 토큰 검증 API
- * [GET] /app/auto-login
+ * API No. 5
+ * API Name : 동물/식물 추가
+ * [POST] /users/pet
  */
- exports.jwtCheck = async function (req, res) {
-    console.log("\n---- JWT Decode 정보 출력 ----");
-    const userId = req.verifiedToken.userId;
-    const userName = req.verifiedToken.userName;
-    const userProfileImage = req.verifiedToken.userProfileImage;
-    const userEmail = req.verifiedToken.userEmail;
-    console.log(userId);
-    console.log(userName);
-    console.log(userProfileImage);
-    console.log(userEmail);
-    console.log("------------------------------");
+exports.postUsersPet = async function (req, res) {
+    const user_id = req.verifiedToken.userId;
+    const pet_tag = req.body.pet_tag;
+    const pet_name = req.body.pet_name;
+    const pet_age = req.body.pet_age;
+    const pet_species = req.body.pet_species;
+    const pet_sex = req.body.pet_sex;
+    const pet_profile_img = req.body.pet_profile_img;
+
+    const result = await userService.addPet(user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img);
 
     // return 값 확인
     console.log("\n----------- return data -------------");
-    console.log(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
+    console.log(result);
     console.log("-------------------------------------");
 
-    return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
+    return res.send(result);
 };
 
-/**
- * API No. 5
- * API Name : 회원 정보 수정 API + JWT + Validation
- * [PATCH] /app/users/:userId
- * path variable : userId
- * body : nickname
+/*
+ * API No. 6
+ * API Name : 동물/식물 수정
+ * [PUT] /users/pet/:petId
  */
-// exports.patchUsers = async function (req, res) {
+exports.putUsersPet = async function (req, res) {
+    const user_id = req.verifiedToken.userId;
+    const pet_tag = req.body.pet_tag;
+    const pet_name = req.body.pet_name;
+    const pet_age = req.body.pet_age;
+    const pet_species = req.body.pet_species;
+    const pet_sex = req.body.pet_sex;
+    const pet_profile_img = req.body.pet_profile_img;
+    const pet_id = req.params.petId;
 
-//     // jwt - userId, path variable :userId
+    const result = await userService.modifyPet(user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img, pet_id);
 
-//     const userIdFromJWT = req.verifiedToken.userId
+    // return 값 확인
+    console.log("\n----------- return data -------------");
+    console.log(result);
+    console.log("-------------------------------------");
 
-//     const userId = req.params.userId;
-//     const nickname = req.body.nickname;
+    return res.send(result);
+};
 
-//     if (userIdFromJWT != userId) {
-//         res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
-//     } else {
-//         if (!nickname) return res.send(errResponse(baseResponse.USER_NICKNAME_EMPTY));
+/*
+ * API No. 7
+ * API Name : 동물/식물 삭제
+ * [DELETE] /users/pet/:petId
+ */
+exports.delectUsersPet = async function (req, res) {
+    const user_id = req.verifiedToken.userId;
+    const pet_id = req.params.petId;
 
-//         const editUserInfo = await userService.editUser(userId, nickname)
-//         return res.send(editUserInfo);
-//     }
-// };
+    const result = await userService.removePet(user_id, pet_id);
 
-// /** JWT 토큰 검증 API
-//  * [GET] /app/auto-login
-//  */
-//  exports.check = async function (req, res) {
-//     console.log("--------- JWT 토큰 검증 ----------");
-//     console.log(JSON.stringify(req));
+    // return 값 확인
+    console.log("\n----------- return data -------------");
+    console.log(result);
+    console.log("-------------------------------------");
 
-//     const userIdResult = req.verifiedToken.userId;
-//     console.log(userIdResult);
-//     return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
-// };
+    return res.send(result);
+};

@@ -1,58 +1,44 @@
 const { pool } = require("../../../config/database");
-const { logger } = require("../../../config/winston");
-
 const userDao = require("./userDao");
 
 // Provider: Read 비즈니스 로직 처리
 
-exports.retrieveUserIdWithEmail = async function (email) {
+exports.getPetList = async function (user_id) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const userListResult = await userDao.selectUserIdWhereEmail(connection, email);
+  const result = await userDao.selectUsersAllPetList(connection, user_id);
   connection.release();
 
-  return userListResult;
+  return result;
 };
 
-exports.joinUser = async function (email, nickname, profile_image) {
+exports.addPet = async function (user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const joinUserResult = await userDao.insertIntoUser(connection, email, nickname, profile_image);
+  const result = await userDao.insertIntoPet(connection, user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img);
   connection.release();
 
-  return joinUserResult;
-}
-
-exports.retrieveUser = async function (userIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const userResult = await userDao.selectUserIdx(connection, userIdx);
-
-  connection.release();
-
-  return userResult[0];
+  return result;
 };
 
-exports.emailCheck = async function (email) {
+exports.retrievePetOwnerId = async function (pet_id) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const emailCheckResult = await userDao.selectUserEmail(connection, email);
+  const result = await userDao.selectFromUserIdAtPet(connection, pet_id);
   connection.release();
 
-  return emailCheckResult;
+  return result;
 };
 
-exports.passwordCheck = async function (selectUserPasswordParams) {
+exports.modifyPet = async function (pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img, pet_id) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const passwordCheckResult = await userDao.selectUserPassword(
-      connection,
-      selectUserPasswordParams
-  );
+  const result = await userDao.updateSetPet(connection, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img, pet_id);
   connection.release();
 
-  return passwordCheckResult[0];
+  return result;
 };
 
-exports.accountCheck = async function (email) {
+exports.removePet = async function (pet_id) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const userAccountResult = await userDao.selectUserAccount(connection, email);
+  const result = await userDao.deleteFromPet(connection, pet_id);
   connection.release();
 
-  return userAccountResult;
+  return result;
 };

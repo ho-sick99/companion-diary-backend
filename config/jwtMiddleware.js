@@ -3,12 +3,11 @@ const secret_config = require('./secret');
 const { response } = require("./response")
 const { errResponse } = require("./response")
 const baseResponse = require("./baseResponseStatus");
-const { Console } = require('winston/lib/winston/transports');
 
 const jwtMiddleware = (req, res, next) => {
     try {
         // console.log("\n----------------------------------------------------------");
-        // console.log(req.headers['x-access-token']);
+        // console.log(req.headers['jwt']);
         // console.log("----------------------------------------------------------");
 
         // read the token from header

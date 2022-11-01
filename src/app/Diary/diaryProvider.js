@@ -1,22 +1,44 @@
 const { pool } = require("../../../config/database");
-const { logger } = require("../../../config/winston");
-
 const diaryDao = require("./diaryDao");
 
 // Provider: Read 비즈니스 로직 처리
 
-exports.retrieveDiaryList = async function (userId) {
+exports.retrieveDiaryList = async function (user_id) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const diaryListResult = await diaryDao.selectDiary(connection, userId);
+  const result = await diaryDao.selectFromAllDiaryList(connection, user_id);
   connection.release();
 
-  return diaryListResult;
+  return result;
 };
 
-exports.retrieveCreateDiary = async function (petId, userId, content, title, img_url_1, img_url_2, img_url_3, img_url_4, img_url_5) {
+exports.createDiary = async function (user_id, pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const createDiaryResult = await diaryDao.insertIntoDiary(connection, petId, userId, content, title, img_url_1, img_url_2, img_url_3, img_url_4, img_url_5);
+  const result = await diaryDao.insertIntoDiary(connection, user_id, pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5);
   connection.release();
 
-  return createDiaryResult;
+  return result;
+};
+
+exports.retrieveDiaryOwnerId = async function (diary_id) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await diaryDao.selectFromUserIdAtDiary(connection, diary_id);
+  connection.release();
+
+  return result;
+};
+
+exports.modifyDiary = async function (pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await diaryDao.updateSetDiary(connection, pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id);
+  connection.release();
+
+  return result;
+};
+
+exports.removeDiary = async function (diary_id) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await diaryDao.deleteFromDiary(connection, diary_id);
+  connection.release();
+
+  return result;
 };

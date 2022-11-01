@@ -1,76 +1,50 @@
 const mysql = require('mysql2/promise');
 
-// 이메일로 회원 ID 조회
-async function selectUserIdWhereEmail(connection, email) {
-  // const selectUserEmailQuery = `SELECT EXISTS (SELECT user_id from COMPAION_DIARY_DB.user WHERE user_email = ? LIMIT 1) AS SUCCESS;`
-
-  const query = mysql.format(`SELECT user_id FROM COMPAION_DIARY_DB.user WHERE user_email=?;`, [email]);
+// 사용자의 반려동식물 리스트 조회
+async function selectUsersAllPetList(connection, user_id) {
+  const query = mysql.format(`SELECT pet_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img FROM COMPAION_DIARY_DB.pet WHERE user_id = ?;`, [user_id]);
   const Rows = await connection.query(query);
 
-  return Rows;
+  return Rows[0];
 }
 
-// 회원 가입
-async function insertIntoUser(connection, email, nickname, profile_image) {
-  const query = mysql.format(`INSERT INTO COMPAION_DIARY_DB.user(user_email, user_nickname, profile_img_url) VALUES(?, ?, ?);`, [email, nickname, profile_image]);
+
+// 사용자의 반려동식물 추가
+async function insertIntoPet(connection, user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img) {
+  const query = mysql.format(`INSERT INTO COMPAION_DIARY_DB.pet(user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img) VALUES (?, ?, ?, ?, ?, ?, ?);`, [user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img]);
   const Rows = await connection.query(query);
 
-  return Rows;
+  return Rows[0];
 }
 
-// userId 회원 조회
-async function selectUserIdx(connection, userIdx) {
-  const selectUserIdxQuery = `
-                 SELECT email, nickname, name
-                 FROM User 
-                 WHERE userIdx = ?;
-                 `;
-  const [userRow] = await connection.query(selectUserIdxQuery, userIdx);
-  return userRow;
+// 해당 반려동식물의 user_id 조회
+async function selectFromUserIdAtPet(connection, pet_id) {
+  const query = mysql.format(`SELECT user_id FROM COMPAION_DIARY_DB.pet WHERE pet_id = ?;`, [pet_id]);
+  const Rows = await connection.query(query);
+
+  return Rows[0];
 }
 
-// 패스워드 체크
-async function selectUserPassword(connection, selectUserPasswordParams) {
-  const selectUserPasswordQuery = `
-        SELECT email, nickname, password
-        FROM UserInfo 
-        WHERE email = ? AND password = ?;`;
-  const selectUserPasswordRow = await connection.query(
-      selectUserPasswordQuery,
-      selectUserPasswordParams
-  );
+// 사용자의 반려동식물 정보 수정
+async function updateSetPet(connection, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img, pet_id) {
+  const query = mysql.format(`UPDATE COMPAION_DIARY_DB.pet SET pet_tag = ?, pet_name = ?, pet_age = ?, pet_species = ?, pet_sex = ?, pet_profile_img = ? WHERE pet_id = ?;`, [pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img, pet_id]);
+  const Rows = await connection.query(query);
 
-  return selectUserPasswordRow;
+  return Rows[0];
 }
 
-// 유저 계정 상태 체크 (jwt 생성 위해 id 값도 가져온다.)
-async function selectUserAccount(connection, email) {
-  const selectUserAccountQuery = `
-        SELECT status, id
-        FROM UserInfo 
-        WHERE email = ?;`;
-  const selectUserAccountRow = await connection.query(
-      selectUserAccountQuery,
-      email
-  );
-  return selectUserAccountRow[0];
-}
+// 사용자의 반려동식물 삭제
+async function deleteFromPet(connection, pet_id) {
+  const query = mysql.format(`DELETE FROM COMPAION_DIARY_DB.pet WHERE pet_id = ?;`, [pet_id]);
+  const Rows = await connection.query(query);
 
-async function updateUserInfo(connection, id, nickname) {
-  const updateUserQuery = `
-  UPDATE UserInfo 
-  SET nickname = ?
-  WHERE id = ?;`;
-  const updateUserRow = await connection.query(updateUserQuery, [nickname, id]);
-  return updateUserRow[0];
+  return Rows[0];
 }
-
 
 module.exports = {
-  selectUserIdWhereEmail,
-  selectUserIdx,
-  insertIntoUser,
-  selectUserPassword,
-  selectUserAccount,
-  updateUserInfo,
+  selectUsersAllPetList,
+  insertIntoPet,
+  selectFromUserIdAtPet,
+  updateSetPet,
+  deleteFromPet,
 };
