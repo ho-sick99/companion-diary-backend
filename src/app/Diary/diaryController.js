@@ -1,4 +1,4 @@
-const diaryService = require("../../app/Diary/diaryService");
+const diaryService = require("./diaryService");
 
 /*
  * API No. 1
@@ -7,8 +7,12 @@ const diaryService = require("../../app/Diary/diaryService");
  */
 exports.getDiarys = async function (req, res) {
     const user_id = req.verifiedToken.userId;
+    const select_date = req.body.select_date;
 
-    const result = await diaryService.getDiaryList(user_id);
+    const select_date_start = select_date + " 00:00:00";
+    const select_date_end = select_date + " 23:59:59";
+
+    const result = await diaryService.getDiaryList(select_date_start, select_date_end, user_id);
     
     // return 값 확인
     console.log("----------- return data -------------");
@@ -46,10 +50,28 @@ exports.postDiarys = async function (req, res) {
 
 /*
  * API No. 3
+ * API Name : 일기 조회
+ * [GET] /diarys/:diaryId
+ */
+exports.getDiarysDiaryId = async function (req, res) {
+    const diary_id = req.params.diaryId;
+
+    const result = await diaryService.getDiary(diary_id);
+    
+    // return 값 확인
+    console.log("----------- return data -------------");
+    console.log(result);
+    console.log("-------------------------------------");
+
+    return res.send(result);
+};
+
+/*
+ * API No. 4
  * API Name : 일기 수정
  * [PUT] /diarys/:diaryId
  */
-exports.putDiarys = async function (req, res) {
+exports.putDiarysDiaryId = async function (req, res) {
     const user_id = req.verifiedToken.userId;
     const pet_id = req.body.pet_id;
     const diary_title = req.body.diary_title
@@ -72,11 +94,11 @@ exports.putDiarys = async function (req, res) {
 };
 
 /*
- * API No. 4
+ * API No. 5
  * API Name : 일기 삭제
  * [DELETE] /diarys/:diaryId
  */
-exports.deleteDiarys = async function (req, res) {
+exports.deleteDiarysDiaryId = async function (req, res) {
     const user_id = req.verifiedToken.userId;
     const diary_id = req.params.diaryId;
 

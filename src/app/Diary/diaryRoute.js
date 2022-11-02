@@ -8,10 +8,13 @@ module.exports = function(app){
     // 2. 일기 생성
     app.post('/diarys', jwtMiddleware, diary.postDiarys);
 
-    // 3. 일기 수정
-    app.put('/diarys/:diaryId', jwtMiddleware, diary.putDiarys)
+    // 3. 일기 조회
+    app.get('/diarys/:diaryId', jwtMiddleware, diary.getDiarysDiaryId);
 
-    // 4. 일기 삭제
-    app.delete('/diarys/:diaryId', jwtMiddleware, diary.deleteDiarys)
+    // 4. 일기 수정
+    app.put('/diarys/:diaryId', jwtMiddleware, diary.putDiarysDiaryId)
+
+    // 5. 일기 삭제
+    app.delete('/diarys/:diaryId', jwtMiddleware, diary.deleteDiarysDiaryId)
 
 };

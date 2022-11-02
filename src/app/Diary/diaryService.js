@@ -4,9 +4,9 @@ const {response} = require("../../../config/response");
 const {errResponse} = require("../../../config/response");
 
 // 일기 리스트 조회
-exports.getDiaryList = async function (user_id) {
+exports.getDiaryList = async function (select_date_start, select_date_end, user_id) {
     try {
-        const result = await diaryProvider.retrieveDiaryList(user_id);
+        const result = await diaryProvider.retrieveDiaryList(select_date_start, select_date_end, user_id);
 
         return response(baseResponse.SUCCESS, result);
 
@@ -25,6 +25,22 @@ exports.createDiary = async function (user_id, pet_id, diary_title, diary_conten
         await diaryProvider.createDiary(user_id, pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5);
 
         return response(baseResponse.SUCCESS);
+
+    } catch(err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
+
+// 일기 조회
+exports.getDiary = async function (diary_id) {
+    try {
+        const result = await diaryProvider.retrieveDiary(diary_id);
+
+        return response(baseResponse.SUCCESS, result[0]);
 
     } catch(err) {
         console.log("----------------------------------------------------------");
