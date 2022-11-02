@@ -1,5 +1,13 @@
 const mysql = require('mysql2/promise');
 
+// 사용자 프로필 정보 수정
+async function updateFromUser(connection, user_nickname, user_profile_img, user_id) {
+  const query = mysql.format(`UPDATE COMPAION_DIARY_DB.user SET user_nickname = ?, user_profile_img = ? WHERE user_id = ?;`, [user_nickname, user_profile_img, user_id]);
+  const Rows = await connection.query(query);
+
+  return Rows[0];
+}
+
 // 사용자의 반려동식물 리스트 조회
 async function selectUsersAllPetList(connection, user_id) {
   const query = mysql.format(`SELECT pet_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img FROM COMPAION_DIARY_DB.pet WHERE user_id = ?;`, [user_id]);
@@ -42,6 +50,7 @@ async function deleteFromPet(connection, pet_id) {
 }
 
 module.exports = {
+  updateFromUser,
   selectUsersAllPetList,
   insertIntoPet,
   selectFromUserIdAtPet,

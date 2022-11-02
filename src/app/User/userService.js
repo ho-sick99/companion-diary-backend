@@ -1,7 +1,55 @@
+const secret_config = require("../../../config/secret");
 const userProvider = require("./userProvider");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response} = require("../../../config/response");
 const {errResponse} = require("../../../config/response");
+const jwt = require("jsonwebtoken");
+
+exports.putUsers = async function (user_id, user_email, user_nickname, user_profile_img) {
+    try {
+        // JWT 발급 후 리턴
+        try {
+            //토큰 생성 Service
+            const jwtToken = jwt.sign(
+                {
+                    userId : user_id,
+                    userEmail : user_email,
+                    userNicname : user_nickname,
+                    userProfileImage : user_profile_img
+                }, // 토큰의 내용(payload)
+                secret_config.jwtSecret, // 비밀키
+                {
+                    expiresIn: "365d",
+                    subject: "userInfo",
+                } // 유효 기간 365일
+            );
+
+            // 수정된 user_nickname, user_profile_img 정보 DB에 반영
+            await userProvider.updateUserInfo(user_nickname, user_profile_img, user_id);
+
+            // return 값 확인
+            console.log("\n----------- return data -------------");
+            console.log(response(baseResponse.SUCCESS, {'x-access-token': jwtToken}));
+            console.log("-------------------------------------");
+
+            return response(baseResponse.SUCCESS, {'x-access-token': jwtToken});
+
+        } catch (err) {
+            console.log("\n----------------------------------------------------------");
+            console.log(err);
+            console.log("----------------------------------------------------------");
+
+            return errResponse(baseResponse.TOKEN_VERIFICATION_FAILURE);
+        }
+        
+    } catch(err) {
+        console.log("\n----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.SERVER_ERROR);
+    }
+};
 
 exports.getPetList = async function (user_id) {
     try {

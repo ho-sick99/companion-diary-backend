@@ -3,6 +3,14 @@ const userDao = require("./userDao");
 
 // Provider: Read 비즈니스 로직 처리
 
+exports.updateUserInfo = async function (user_nickname, user_profile_img, user_id) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await userDao.updateFromUser(connection, user_nickname, user_profile_img, user_id);
+  connection.release();
+
+  return result;
+};
+
 exports.getPetList = async function (user_id) {
   const connection = await pool.getConnection(async (conn) => conn);
   const result = await userDao.selectUsersAllPetList(connection, user_id);

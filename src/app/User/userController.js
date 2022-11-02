@@ -1,11 +1,6 @@
-const jwtMiddleware = require("../../../config/jwtMiddleware");
-const userProvider = require("../../app/User/userProvider");
 const userService = require("../../app/User/userService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
-
-const regexEmail = require("regex-email");
-const {emit} = require("nodemon");
 
 /*
  * API No. 1
@@ -25,6 +20,27 @@ exports.getUsers = async function (req, res) {
     console.log("-------------------------------------");
 
     return res.send(response(baseResponse.SUCCESS, ob));
+};
+
+/*
+ * API No. 2
+ * API Name : 프로필 수정
+ * [PUT] /users
+ */
+exports.putUsers = async function (req, res) {
+    const user_id = req.verifiedToken.userId;
+    const user_email = req.verifiedToken.userEmail;
+    const user_nickname = req.body.user_nickname;
+    const user_profile_img = req.body.user_profile_img;
+
+    const result = await userService.putUsers(user_id, user_email, user_nickname, user_profile_img);
+
+    // return 값 확인
+    console.log("\n----------- return data -------------");
+    console.log(result);
+    console.log("-------------------------------------");
+
+    return res.send(result);
 };
 
 /*
