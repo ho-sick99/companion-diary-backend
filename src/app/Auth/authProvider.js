@@ -18,3 +18,11 @@ exports.joinUser = async function (user_email, user_nickname, user_profile_img) 
   
     return result;
 };
+
+exports.addOtherPet = async function (user_id) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await authDao.insertIntoOtherPet(connection, user_id);
+  connection.release();
+
+  return result;
+};

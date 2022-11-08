@@ -8,6 +8,14 @@ async function updateFromUser(connection, user_nickname, user_profile_img, user_
   return Rows[0];
 }
 
+// 사용자 삭제
+async function deleteFromUsers(connection, user_id) {
+  const query = mysql.format(`DELETE FROM COMPAION_DIARY_DB.user WHERE user_id = ?;`, [user_id]);
+  const Rows = await connection.query(query);
+
+  return Rows[0];
+}
+
 // 사용자의 반려동식물 리스트 조회
 async function selectUsersAllPetList(connection, user_id) {
   const query = mysql.format(`SELECT pet_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img FROM COMPAION_DIARY_DB.pet WHERE user_id = ?;`, [user_id]);
@@ -51,6 +59,7 @@ async function deleteFromPet(connection, pet_id) {
 
 module.exports = {
   updateFromUser,
+  deleteFromUsers,
   selectUsersAllPetList,
   insertIntoPet,
   selectFromUserIdAtPet,

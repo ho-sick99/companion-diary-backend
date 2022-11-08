@@ -11,6 +11,14 @@ exports.updateUserInfo = async function (user_nickname, user_profile_img, user_i
   return result;
 };
 
+exports.removeUserData = async function (user_id) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await userDao.deleteFromUsers(connection, user_id);
+  connection.release();
+
+  return result;
+};
+
 exports.getPetList = async function (user_id) {
   const connection = await pool.getConnection(async (conn) => conn);
   const result = await userDao.selectUsersAllPetList(connection, user_id);

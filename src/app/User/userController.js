@@ -44,6 +44,24 @@ exports.putUsers = async function (req, res) {
 };
 
 /*
+ * API No. 3
+ * API Name : 회원 탈퇴
+ * [DELETE] /users
+ */
+exports.deleteUsers = async function (req, res) {
+    const user_id = req.verifiedToken.userId;
+
+    const result = await userService.deleteUsers(user_id);
+
+    // return 값 확인
+    console.log("\n----------- return data -------------");
+    console.log(result);
+    console.log("-------------------------------------");
+
+    return res.send(result);
+};
+
+/*
  * API No. 4
  * API Name : 동물/식물 리스트 불러오기
  * [GET] /users/pet

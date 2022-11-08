@@ -51,6 +51,21 @@ exports.putUsers = async function (user_id, user_email, user_nickname, user_prof
     }
 };
 
+exports.deleteUsers = async function (user_id) {
+    try {
+        await userProvider.removeUserData(user_id);
+
+        return response(baseResponse.SUCCESS);
+        
+    } catch(err) {
+        console.log("\n----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.SERVER_ERROR);
+    }
+};
+
 exports.getPetList = async function (user_id) {
     try {
         const result = await userProvider.getPetList(user_id);

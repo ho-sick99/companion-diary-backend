@@ -8,6 +8,9 @@ module.exports = function(app){
     // 1.2 프로필 수정
     app.put('/users', jwtMiddleware, user.putUsers);
 
+    // 1.3 회원 탈퇴
+    app.delete('/users', jwtMiddleware, user.deleteUsers);
+
     // 1.4 동물/식물 리스트 불러오기
     app.get('/users/pet', jwtMiddleware, user.getUsersPet);
 

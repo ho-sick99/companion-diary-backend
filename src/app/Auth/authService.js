@@ -43,12 +43,18 @@ exports.signIn = async function (token) {
 
             // 회원가입
             if (user_id == undefined) {
+                // DB에 회원정보 추가
                 await authProvider.joinUser(user_email, user_nickname, user_profile_img);
+
                 const joinUserIdRows = await authProvider.retrieveUserIdWithEmail(user_email);
+
                 for (let data of joinUserIdRows) {
                     user_id = data.user_id;
                     console.log("user_id : " + user_id);
                 }
+
+                // 회원의 animal Aother, plant Aother 추가
+                await authProvider.addOtherPet(user_id);
             }
 
             // 로그인 (JWT 발급 후 리턴)

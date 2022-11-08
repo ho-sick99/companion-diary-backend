@@ -16,7 +16,17 @@ async function insertIntoUser(connection, user_email, user_nickname, user_profil
   return Rows[0];
 }
 
+// 사용자 other 동식물 추가
+async function insertIntoOtherPet(connection, user_id) {
+  const query = mysql.format(`INSERT INTO COMPAION_DIARY_DB.pet(user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img) VALUES (?, "ANIMAL", "OTHER", 0, "OTHER", "OTHER", null), (?, "PLANT", "OTHER", 0, "OTHER", "OTHER", null);`, [user_id, user_id]);
+  const Rows = await connection.query(query);
+
+  return Rows[0];
+}
+
+
 module.exports = {
   selectUserIdWhereEmail,
   insertIntoUser,
+  insertIntoOtherPet,
 };
