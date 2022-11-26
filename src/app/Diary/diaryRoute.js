@@ -12,9 +12,12 @@ module.exports = function(app){
     app.get('/diarys/:diaryId', jwtMiddleware, diary.getDiarysDiaryId);
 
     // 4. 일기 수정
-    app.put('/diarys/:diaryId', jwtMiddleware, diary.putDiarysDiaryId)
+    app.put('/diarys/:diaryId', jwtMiddleware, diary.putDiarysDiaryId);
 
     // 5. 일기 삭제
-    app.delete('/diarys/:diaryId', jwtMiddleware, diary.deleteDiarysDiaryId)
+    app.delete('/diarys/:diaryId', jwtMiddleware, diary.deleteDiarysDiaryId);
+
+    // 6. 월별 일기 날짜 리스트 불러오기
+    app.delete('/diarys/list', jwtMiddleware, diary.getDiarysList);
 
 };

@@ -14,8 +14,8 @@ async function selectFromAllDiaryList(connection, select_date_start, select_date
 }
 
 // 일기 생성
-async function insertIntoDiary(connection, user_id, pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5) {
-  const query = mysql.format(`INSERT INTO COMPAION_DIARY_DB.diary(user_id, pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`, [user_id, pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5]);
+async function insertIntoDiary(connection, user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5) {
+  const query = mysql.format(`INSERT INTO COMPAION_DIARY_DB.diary(user_id, pet_id, create_time, update_time, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`, [user_id, pet_id, date, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5]);
   const Rows = await connection.query(query);
 
   return Rows[0];

@@ -20,9 +20,9 @@ exports.getDiaryList = async function (select_date_start, select_date_end, user_
 }
 
 // 일기 생성
-exports.createDiary = async function (user_id, pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5) {
+exports.createDiary = async function (user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5) {
     try {
-        await diaryProvider.createDiary(user_id, pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5);
+        await diaryProvider.createDiary(user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5);
 
         return response(baseResponse.SUCCESS);
 
@@ -95,6 +95,22 @@ exports.removeDiary = async function (user_id, diary_id) {
         }
 
         await diaryProvider.removeDiary(diary_id);
+
+        return response(baseResponse.SUCCESS);
+
+    } catch(err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
+
+// 월별 일기 날짜 리스트 가져오기
+exports.getMonthDiaryList = async function (user_id, month) {
+    try {
+        await diaryProvider.getMonthDateList(user_id, month);
 
         return response(baseResponse.SUCCESS);
 

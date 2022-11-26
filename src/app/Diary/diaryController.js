@@ -30,6 +30,7 @@ exports.getDiarys = async function (req, res) {
 exports.postDiarys = async function (req, res) {
     const user_id = req.verifiedToken.userId;
     const pet_id = req.body.pet_id;
+    const date = req.body.date;
     const diary_title = req.body.diary_title
     const diary_content = req.body.diary_content
     const diary_img_url_1 = req.body.diary_img_url_1
@@ -38,7 +39,7 @@ exports.postDiarys = async function (req, res) {
     const diary_img_url_4 = req.body.diary_img_url_4
     const diary_img_url_5 = req.body.diary_img_url_5
 
-    const result = await diaryService.createDiary(user_id, pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5);
+    const result = await diaryService.createDiary(user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5);
 
     // return 값 확인
     console.log("----------- return data -------------");
@@ -103,6 +104,25 @@ exports.deleteDiarysDiaryId = async function (req, res) {
     const diary_id = req.params.diaryId;
 
     const result = await diaryService.removeDiary(user_id, diary_id);
+
+    // return 값 확인
+    console.log("----------- return data -------------");
+    console.log(result);
+    console.log("-------------------------------------");
+
+    return res.send(result);
+};
+
+/*
+ * API No. 6
+ * API Name : 월별 일기 날짜 리스트 불러오기
+ * [GET] /diarys/list
+ */
+exports.getDiarysList = async function (req, res) {
+    const user_id = req.verifiedToken.userId;
+    const month = req.query.month;
+
+    const result = await diaryService.getMonthDiaryList(user_id, month);
 
     // return 값 확인
     console.log("----------- return data -------------");
