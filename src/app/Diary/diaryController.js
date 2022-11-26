@@ -75,6 +75,7 @@ exports.getDiarysDiaryId = async function (req, res) {
 exports.putDiarysDiaryId = async function (req, res) {
     const user_id = req.verifiedToken.userId;
     const pet_id = req.body.pet_id;
+    const date = req.body.date;
     const diary_title = req.body.diary_title
     const diary_content = req.body.diary_content
     const diary_img_url_1 = req.body.diary_img_url_1
@@ -84,7 +85,7 @@ exports.putDiarysDiaryId = async function (req, res) {
     const diary_img_url_5 = req.body.diary_img_url_5
     const diary_id = req.params.diaryId;
 
-    const result = await diaryService.modifyDiary(user_id, pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id);
+    const result = await diaryService.modifyDiary(user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id);
 
     // return 값 확인
     console.log("----------- return data -------------");
@@ -120,9 +121,15 @@ exports.deleteDiarysDiaryId = async function (req, res) {
  */
 exports.getDiarysList = async function (req, res) {
     const user_id = req.verifiedToken.userId;
-    const month = req.query.month;
+    const start_date = req.query.start_date;
+    const end_date = req.query.end_date;
 
-    const result = await diaryService.getMonthDiaryList(user_id, month);
+    const select_date_start = start_date + " 00:00:00";
+    const select_date_end = end_date + " 23:59:59";
+
+    console.log("실행");
+
+    const result = await diaryService.getMonthDiaryList(user_id, select_date_start, select_date_end);
 
     // return 값 확인
     console.log("----------- return data -------------");

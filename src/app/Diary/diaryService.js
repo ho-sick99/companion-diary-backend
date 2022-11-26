@@ -52,7 +52,7 @@ exports.getDiary = async function (diary_id) {
 }
 
 // 일기 수정
-exports.modifyDiary = async function (user_id, pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id) {
+exports.modifyDiary = async function (user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id) {
     try {
         // 사용자 id == 일기 작성자 id인지 체크
         let diary_owner_id;
@@ -66,7 +66,7 @@ exports.modifyDiary = async function (user_id, pet_id, diary_title, diary_conten
             return response(baseResponse.FORBIDDEN);
         }
 
-        await diaryProvider.modifyDiary(pet_id, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id);
+        await diaryProvider.modifyDiary(pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id);
 
         return response(baseResponse.SUCCESS);
 
@@ -108,11 +108,12 @@ exports.removeDiary = async function (user_id, diary_id) {
 }
 
 // 월별 일기 날짜 리스트 가져오기
-exports.getMonthDiaryList = async function (user_id, month) {
+exports.getMonthDiaryList = async function (user_id, select_date_start, select_date_end) {
     try {
-        await diaryProvider.getMonthDateList(user_id, month);
+        const result = await diaryProvider.getMonthDateList(user_id, select_date_start, select_date_end);
+        console.log(result);
 
-        return response(baseResponse.SUCCESS);
+        return response(baseResponse.SUCCESS, result);
 
     } catch(err) {
         console.log("----------------------------------------------------------");
