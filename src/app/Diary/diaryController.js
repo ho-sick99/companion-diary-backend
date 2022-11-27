@@ -117,7 +117,7 @@ exports.deleteDiarysDiaryId = async function (req, res) {
 /*
  * API No. 6
  * API Name : 월별 일기 날짜 리스트 불러오기
- * [GET] /diarys/list
+ * [GET] /diarys/list/date
  */
 exports.getDiarysList = async function (req, res) {
     const user_id = req.verifiedToken.userId;
@@ -126,8 +126,6 @@ exports.getDiarysList = async function (req, res) {
 
     const select_date_start = start_date + " 00:00:00";
     const select_date_end = end_date + " 23:59:59";
-
-    console.log("실행");
 
     const result = await diaryService.getMonthDiaryList(user_id, select_date_start, select_date_end);
 

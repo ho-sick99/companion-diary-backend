@@ -18,6 +18,6 @@ module.exports = function(app){
     app.delete('/diarys/:diaryId', jwtMiddleware, diary.deleteDiarysDiaryId);
 
     // 6. 월별 일기 날짜 리스트 불러오기
-    app.get('/diarys/list', jwtMiddleware, diary.getDiarysList);
+    app.get('/diarys/list/date', jwtMiddleware, diary.getDiarysList);
 
 };

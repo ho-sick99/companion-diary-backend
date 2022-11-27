@@ -110,10 +110,14 @@ exports.removeDiary = async function (user_id, diary_id) {
 // 월별 일기 날짜 리스트 가져오기
 exports.getMonthDiaryList = async function (user_id, select_date_start, select_date_end) {
     try {
-        const result = await diaryProvider.getMonthDateList(user_id, select_date_start, select_date_end);
-        console.log(result);
+        let dayList = [];
 
-        return response(baseResponse.SUCCESS, result);
+        const result = await diaryProvider.getMonthDateList(user_id, select_date_start, select_date_end);
+        for (let date of result) {
+            dayList.push(date.day)
+        }
+
+        return response(baseResponse.SUCCESS, dayList);
 
     } catch(err) {
         console.log("----------------------------------------------------------");

@@ -61,7 +61,7 @@ async function deleteFromDiary(connection, diary_id) {
 
 // 월별 일기 날짜 리스트 불러오기
 async function selectDistinctFromDate(connection, user_id, select_date_start, select_date_end) {
-  const query = mysql.format(`SELECT DISTINCT DATE_FORMAT(date, '%d')
+  const query = mysql.format(`SELECT DISTINCT DATE_FORMAT(date, '%d') AS "day"
    FROM COMPAION_DIARY_DB.diary WHERE date BETWEEN ? AND ? AND user_id = ?;`, [select_date_start, select_date_end, user_id]);
   const Rows = await connection.query(query);
 
