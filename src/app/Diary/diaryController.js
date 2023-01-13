@@ -7,7 +7,7 @@ const diaryService = require("./diaryService");
  */
 exports.getDiarys = async function (req, res) {
     const user_id = req.verifiedToken.userId;
-    const select_date = req.body.select_date;
+    const select_date = req.query.date;
 
     const select_date_start = select_date + " 00:00:00";
     const select_date_end = select_date + " 23:59:59";

@@ -3,13 +3,23 @@ const {logger} = require('./winston');
 
 // TODO: 본인의 DB 계정 입력
 const pool = mysql.createPool({
-    host: '3.36.61.143',
+    host: '43.201.108.60',
     port: 3306,
     user: 'user',
     password: 'user',
     database: 'COMPAION_DIARY_DB',
     charset : 'utf8'
 });
+
+// // TODO: 본인의 DB 계정 입력
+// const pool = mysql.createPool({
+//     host: '127.0.0.1',
+//     port: 13307,
+//     user: 'root',
+//     password: 'root',
+//     database: 'COMPAION_DIARY_DB',
+//     charset : 'utf8'
+// });
 
 module.exports = {
     pool: pool

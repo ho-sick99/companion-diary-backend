@@ -1,4 +1,4 @@
-const postService = require("../../app/User/postService");
+const postService = require("./postService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 
@@ -9,16 +9,21 @@ const {response, errResponse} = require("../../../config/response");
  */
 exports.postPostQuestion = async function (req, res) {
     const user_id = req.verifiedToken.userId
-    const user_email = req.verifiedToken.userEmail;
-    const user_nickname = req.verifiedToken.userNicname;
-    const user_profile_img = req.verifiedToken.userProfileImage;
+    const pet_id = req.body.pet_id;
+    const post_title = req.body.post_title;
+    const post_content = req.body.post_content;
+    const post_img_url_1 = req.body.post_img_url_1;
+    const post_img_url_2 = req.body.post_img_url_2;
+    const post_img_url_3 = req.body.post_img_url_3;
+    const post_img_url_4 = req.body.post_img_url_4;
+    const post_img_url_5 = req.body.post_img_url_5;
 
-    let ob = {user_email : user_email, user_nickname : user_nickname, user_profile_img : user_profile_img};
+    const result = await diaryService.postPostQuestion(user_id, pet_id, post_title, post_content, post_img_url_1, post_img_url_2, post_img_url_3, post_img_url_4, post_img_url_5);
 
     // return 값 확인
-    console.log("\n----------- return data -------------");
-    console.log(response(baseResponse.SUCCESS, ob));
+    console.log("----------- return data -------------");
+    console.log(result);
     console.log("-------------------------------------");
 
-    return res.send(response(baseResponse.SUCCESS, ob));
+    return res.send(result);
 };
