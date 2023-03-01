@@ -54,18 +54,18 @@ exports.postDiarys = async function (req, res) {
  * API Name : 일기 조회
  * [GET] /diarys/:diaryId
  */
-exports.getDiarysDiaryId = async function (req, res) {
-    const diary_id = req.params.diaryId;
+// exports.getDiarysDiaryId = async function (req, res) {
+//     const diary_id = req.params.diaryId;
 
-    const result = await diaryService.getDiary(diary_id);
+//     const result = await diaryService.getDiary(diary_id);
     
-    // return 값 확인
-    console.log("----------- return data -------------");
-    console.log(result);
-    console.log("-------------------------------------");
+//     // return 값 확인
+//     console.log("----------- return data -------------");
+//     console.log(result);
+//     console.log("-------------------------------------");
 
-    return res.send(result);
-};
+//     return res.send(result);
+// };
 
 /*
  * API No. 4

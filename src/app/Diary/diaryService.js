@@ -36,20 +36,20 @@ exports.createDiary = async function (user_id, pet_id, date, diary_title, diary_
 }
 
 // 일기 조회
-exports.getDiary = async function (diary_id) {
-    try {
-        const result = await diaryProvider.retrieveDiary(diary_id);
+// exports.getDiary = async function (diary_id) {
+//     try {
+//         const result = await diaryProvider.retrieveDiary(diary_id);
 
-        return response(baseResponse.SUCCESS, result[0]);
+//         return response(baseResponse.SUCCESS, result[0]);
 
-    } catch(err) {
-        console.log("----------------------------------------------------------");
-        console.log(err);
-        console.log("----------------------------------------------------------");
+//     } catch(err) {
+//         console.log("----------------------------------------------------------");
+//         console.log(err);
+//         console.log("----------------------------------------------------------");
 
-        return errResponse(baseResponse.DB_ERROR);
-    }
-}
+//         return errResponse(baseResponse.DB_ERROR);
+//     }
+// }
 
 // 일기 수정
 exports.modifyDiary = async function (user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id) {

@@ -9,7 +9,7 @@ module.exports = function(app){
     app.post('/diarys', jwtMiddleware, diary.postDiarys);
 
     // 3. 일기 조회
-    app.get('/diarys/:diaryId', jwtMiddleware, diary.getDiarysDiaryId);
+    // app.get('/diarys/:diaryId', jwtMiddleware, diary.getDiarysDiaryId);
 
     // 4. 일기 수정
     app.put('/diarys/:diaryId', jwtMiddleware, diary.putDiarysDiaryId);
