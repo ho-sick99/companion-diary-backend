@@ -1,6 +1,20 @@
 const postService = require("./postService");
 const baseResponse = require("../../../config/baseResponseStatus");
-const {response, errResponse} = require("../../../config/response");
+const { response, errResponse } = require("../../../config/response");
+
+const output = {
+    /*
+    * API No. 1
+    * API Name : 동물 게시글 전체 조회(질문글)
+    * [GET] /posts/question/animal
+    */
+    getPostsQuestionAnimal: async (req, res) => {
+        
+        return 
+    }
+}
+
+
 
 /*
  * API No. 10
@@ -26,4 +40,10 @@ exports.postPostQuestion = async function (req, res) {
     console.log("-------------------------------------");
 
     return res.send(result);
+};
+
+// 모듈 export
+module.exports = {
+    output,
+    process,
 };
