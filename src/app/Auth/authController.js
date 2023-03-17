@@ -13,7 +13,6 @@ exports.getSignIn = async function (req, res) {
     // console.log("----------------------------------------------------------");
 
     let token = req.headers['x-access-token'];
-
     const result = await authService.signIn(token);
 
     // return 값 확인
