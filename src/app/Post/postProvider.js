@@ -11,3 +11,12 @@ exports.retrievePostList = async (post_type, pet_tag) => {
 
   return result;
 }
+
+// 게시물 조회(질문글)
+exports.getPostQuestion = async (post_id) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await postDao.selectPost(connection, post_id);
+  connection.release();
+
+  return result;
+}

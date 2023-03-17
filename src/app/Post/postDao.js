@@ -7,18 +7,33 @@ async function selectFromAllPostList(connection, post_type, pet_tag) {
     0: "ANIMAL", // 동물
     1: "PLANT" // 식물
   }; 
-  console.log(TAG[pet_tag]);
   const query = mysql.format(`
     SELECT post.*, pet.pet_species, pet.pet_profile_img, user.user_nickname 
     FROM post, user, pet 
     WHERE post.user_id = user.user_id 
     and post.pet_id = pet.pet_id 
     and post.post_type=?
-    and pet.pet_tag=?;`, [post_type, TAG[pet_tag]]);
+    and pet.pet_tag=?;`,
+    [post_type, TAG[pet_tag]]);
+  const Rows = await connection.query(query);
+
+  return Rows[0];
+}
+
+async function selectPost(connection, post_id) {
+  
+  const query = mysql.format(`
+  SELECT post.*, user.user_nickname 
+  FROM post, user, pet 
+  WHERE post.user_id = user.user_id 
+  and post.pet_id = pet.pet_id 
+  and post.post_id=?;`,
+  [post_id]);
   const Rows = await connection.query(query);
 
   return Rows[0];
 }
 module.exports = {
   selectFromAllPostList,
+  selectPost
 };

@@ -12,6 +12,12 @@ exports.getPostsList = async (post_type, pet_tag) => {
     return await postProvider.retrievePostList(post_type, pet_tag); 
 }
 
+// 게시물 조회 (질문글)
+exports.getPostQuestion = async (post_id) => {
+    return await postProvider.getPostQuestion(Number(post_id)); // post_id 숫자형으로 변환 
+}
+
+
 // 게시물 생성 (질문글)
 exports.postPostQuestion = async function (user_id, pet_id, post_title, post_content, post_img_url_1, post_img_url_2, post_img_url_3, post_img_url_4, post_img_url_5) {
     try {
