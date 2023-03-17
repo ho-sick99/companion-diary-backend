@@ -3,10 +3,11 @@ const postDao = require("./postDao");
 
 // Provider: Read 비즈니스 로직 처리
 
-exports.retrieveDiaryList = async function (select_date_start, select_date_end, user_id) {
+// 동물 게시글 리스트 조회
+exports.retrievePostList = async (post_type, pet_tag) => {
   const connection = await pool.getConnection(async (conn) => conn);
-  const result = await postDao.selectFromAllDiaryList(connection, select_date_start, select_date_end, user_id);
+  const result = await postDao.selectFromAllPostList(connection, post_type, pet_tag);
   connection.release();
 
   return result;
-};
+}

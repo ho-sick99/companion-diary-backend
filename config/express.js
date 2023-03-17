@@ -13,7 +13,7 @@ module.exports = function () {
     require('../src/app/Auth/authRoute')(app);
     require('../src/app/User/userRoute')(app);
     require('../src/app/Diary/diaryRoute')(app);
-    // require('../src/app/Board/boardRoute')(app);
+    require('../src/app/Post/postRoute')(app);
 
     return app;
 };
