@@ -37,33 +37,68 @@ const output = {
     getPostsBoastPlant: async (req, res) => {
         return res.send(await postService.getPostsList(2, 1)); // 2: boast, 1: plant
     },
+    /*
+    * API No. 9
+    * API Name : 게시물 조회(질문글)
+    * [GET] /posts/question/:postId
+    */
+    getPostQuestion: async (req, res) => {
+        const post_id = req.params.postId;
+        console.log(post_id);
+        return res.send(await postService.getPostQuestion(post_id));
+    },
 }
 
-/*
- * API No. 10
- * API Name : 게시물 생성(질문글)
- * [POST] /posts/question
- */
-exports.postPostQuestion = async function (req, res) {
-    const user_id = req.verifiedToken.userId
-    const pet_id = req.body.pet_id;
-    const post_title = req.body.post_title;
-    const post_content = req.body.post_content;
-    const post_img_url_1 = req.body.post_img_url_1;
-    const post_img_url_2 = req.body.post_img_url_2;
-    const post_img_url_3 = req.body.post_img_url_3;
-    const post_img_url_4 = req.body.post_img_url_4;
-    const post_img_url_5 = req.body.post_img_url_5;
 
-    const result = await postService.postPostQuestion(user_id, pet_id, post_title, post_content, post_img_url_1, post_img_url_2, post_img_url_3, post_img_url_4, post_img_url_5);
+// POST
+const process = {
+    /*
+     * API No. 10
+     * API Name : 게시물 생성(질문글)
+     * [POST] /posts/question
+     */
+    postPostQuestion: async (req, res) => {
+        const user_id = req.verifiedToken.userId
+        const pet_id = req.body.pet_id;
+        const post_title = req.body.post_title;
+        const post_content = req.body.post_content;
+        const post_img_url_1 = req.body.post_img_url_1;
+        const post_img_url_2 = req.body.post_img_url_2;
+        const post_img_url_3 = req.body.post_img_url_3;
+        const post_img_url_4 = req.body.post_img_url_4;
+        const post_img_url_5 = req.body.post_img_url_5;
 
-    // return 값 확인
-    console.log("----------- return data -------------");
-    console.log(result);
-    console.log("-------------------------------------");
+        const result = await postService.postPostQuestion(user_id, pet_id, post_title, post_content, post_img_url_1, post_img_url_2, post_img_url_3, post_img_url_4, post_img_url_5);
 
-    return res.send(result);
-};
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
+
+        return res.send(result);
+    },
+    postPostBoast: async (req, res) => {
+        const user_id = req.verifiedToken.userId
+        const pet_id = req.body.pet_id;
+        const post_title = req.body.post_title;
+        const post_content = req.body.post_content;
+        const post_img_url_1 = req.body.post_img_url_1;
+        const post_img_url_2 = req.body.post_img_url_2;
+        const post_img_url_3 = req.body.post_img_url_3;
+        const post_img_url_4 = req.body.post_img_url_4;
+        const post_img_url_5 = req.body.post_img_url_5;
+
+        const result = await postService.postPostQuestion(user_id, pet_id, post_title, post_content, post_img_url_1, post_img_url_2, post_img_url_3, post_img_url_4, post_img_url_5);
+
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
+
+        return res.send(result);
+    },
+}
+
 
 // 모듈 export
 module.exports = {
