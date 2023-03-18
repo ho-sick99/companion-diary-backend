@@ -1,51 +1,25 @@
 const postService = require("./postService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const { response, errResponse } = require("../../../config/response");
-
+const { POST_TYPE } = require("./decsionPostType");
 
 // GET
 const output = {
     /*
     * API No. 1
-    * API Name : 동물 게시글 전체 조회(질문글)
-    * [GET] /posts/question/animal
+    * API Name : 게시글 전체 조회 (동물/식물, 질문글/자랑글)
+    * [GET] /posts?ptype&ptag
     */
-    getPostsQuestionAnimal: async (req, res) => {
-        return res.send(await postService.getPostsList(1, 0)); // 1: question, 0: animal
-    },
-    /*
-    * API No. 2
-    * API Name : 동물 게시글 전체 조회(자랑글)
-    * [GET] /posts/boast/animal
-    */
-    getPostsBoastAnimal: async (req, res) => {
-        return res.send(await postService.getPostsList(2, 0)); // 2: boast, 0: animal
-    },
-    /*
-    * API No. 3
-    * API Name : 식물 게시글 전체 조회(질문글)
-    * [GET] /posts/question/plant
-    */
-    getPostsQuestionPlant: async (req, res) => {
-        return res.send(await postService.getPostsList(1, 1)); // 1: question, 1: plant
-    },
-    /*
-    * API No. 4
-    * API Name : 식물 게시글 전체 조회(자랑글)
-    * [GET] /posts/boast/plant
-    */
-    getPostsBoastPlant: async (req, res) => {
-        return res.send(await postService.getPostsList(2, 1)); // 2: boast, 1: plant
+    getPosts: async (req, res) => {
+        return res.send(await postService.getPostsList(POST_TYPE[req.query.ptype], req.query.ptag)); 
     },
     /*
     * API No. 9
-    * API Name : 게시물 조회(질문글)
+    * API Name : 게시물 조회
     * [GET] /posts/question/:postId
     */
     getPostQuestion: async (req, res) => {
-        const post_id = req.params.postId;
-        console.log(post_id);
-        return res.send(await postService.getPostQuestion(post_id));
+        return res.send(await postService.getPostQuestion(req.params.postId));
     },
 }
 
@@ -58,6 +32,7 @@ const process = {
      * [POST] /posts/question
      */
     postPostQuestion: async (req, res) => {
+        // post type: 1 -> 질문글
         const user_id = req.verifiedToken.userId
         const pet_id = req.body.pet_id;
         const post_title = req.body.post_title;
@@ -77,7 +52,13 @@ const process = {
 
         return res.send(result);
     },
+    /*
+     * API No. 11
+     * API Name : 게시물 생성(자랑글)
+     * [POST] /posts/boast
+     */
     postPostBoast: async (req, res) => {
+        // post type: 2 -> 자랑글
         const user_id = req.verifiedToken.userId
         const pet_id = req.body.pet_id;
         const post_title = req.body.post_title;
