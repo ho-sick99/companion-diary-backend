@@ -9,10 +9,10 @@ const {errResponse} = require("../../../config/response");
 exports.getPostsList = async (post_type, pet_tag) => {
     // 댓글 개수 반환 메서드 추가해야함
 
-    return await postProvider.retrievePostList(post_type, pet_tag); 
+    return await postProvider.retrievePostList(post_type, pet_tag); // 게시글 타입, 동식물 태그
 }
 
-// 게시물 조회 (질문글)
+// 게시물 조회
 exports.getPostQuestion = async (post_id) => {
     return await postProvider.getPostQuestion(Number(post_id)); // post_id 숫자형으로 변환 
 }
