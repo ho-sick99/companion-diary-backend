@@ -35,7 +35,17 @@ exports.getPost = async (post_type, post_id) => {
   return result;
 }
 
-exports.createPost = async (user_id, pet_id, post_title, post_content) => {
+exports.createPost = async (params) => {
   const connection = await pool.getConnection(async (conn) => conn);
-  
+
+  let result = null;
+  if (params.post_type == "QUESTION") { // 질문글
+    result = await postDao.createQustionPost(connection, params); // 질문글 생성
+  } else if (params.post_type == "BOAST") { // 자랑글
+    result = await postDao.createBoastPost(connection, params); // 자랑글 생성
+  }
+
+  connection.release();
+
+  return result;
 }
