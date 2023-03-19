@@ -35,12 +35,11 @@ exports.getPost = async (post_type, post_id) => {
 
 
 // 게시물 생성 (질문글)
-exports.postPostQuestion = async function (user_id, pet_id, post_title, post_content) {
+exports.createPost = async (params) => {
     try {
-        const post_type = "QUESTION";
-        const result = await postProvider.createPost(user_id, pet_id, post_type, post_title, post_content);
+        await postProvider.createPost(params);
 
-        return response(baseResponse.SUCCESS, result);
+        return response(baseResponse.SUCCESS);
 
     } catch (err) {
         console.log("----------------------------------------------------------");

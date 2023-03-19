@@ -8,7 +8,8 @@ const pool = mysql.createPool({
     user: 'user',
     password: 'user',
     database: 'COMPAION_DIARY_DB',
-    charset : 'utf8'
+    charset : 'utf8',
+    multipleStatements: true // 다중 쿼리 가능 설정
 });
 
 // // TODO: 본인의 DB 계정 입력

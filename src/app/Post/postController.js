@@ -11,7 +11,7 @@ const output = {
     * [GET] /posts/list?ptype&ptag
     */
     getPosts: async (req, res) => {
-        return res.send(await postService.getPostsList(req.query.ptype, req.query.ptag)); 
+        return res.send(await postService.getPostsList(req.query.ptype, req.query.ptag));
     },
     /*
     * API No. 2
@@ -31,21 +31,11 @@ const process = {
      * [POST] /posts/question
      */
     postPostQuestion: async (req, res) => {
-        // post type: 1 -> 질문글
         //const user_id = req.verifiedToken.userId; // 추후에 토큰에서 추출하도록 수정
-        console.log(req.body)
-        const pet_id = req.body.pet_id;
-        const user_id = req.body.user_id;
-        const post_title = req.body.post_title;
-        const post_content = req.body.post_content;
-        // const post_img_url_1 = req.body.post_img_url_1; // 이미지 저장 추후 구현
-        // const post_img_url_2 = req.body.post_img_url_2;
-        // const post_img_url_3 = req.body.post_img_url_3;
-        // const post_img_url_4 = req.body.post_img_url_4;
-        // const post_img_url_5 = req.body.post_img_url_5;
+        const params = req.body;
+        params.post_type = "QUESTION"; // 게시글 타입: 질문글
         
-        
-        const result = await postService.postPostQuestion(user_id, pet_id, post_title, post_content);
+        const result = await postService.createPost(params); // 이미지 저장 추후 구현
 
         // return 값 확인
         console.log("----------- return data -------------");
@@ -60,18 +50,11 @@ const process = {
      * [POST] /posts/boast
      */
     postPostBoast: async (req, res) => {
-        // post type: 2 -> 자랑글
-        const user_id = req.verifiedToken.userId
-        const pet_id = req.body.pet_id;
-        const post_title = req.body.post_title;
-        const post_content = req.body.post_content;
-        const post_img_url_1 = req.body.post_img_url_1;
-        const post_img_url_2 = req.body.post_img_url_2;
-        const post_img_url_3 = req.body.post_img_url_3;
-        const post_img_url_4 = req.body.post_img_url_4;
-        const post_img_url_5 = req.body.post_img_url_5;
-
-        const result = await postService.postPostQuestion(user_id, pet_id, post_title, post_content, post_img_url_1, post_img_url_2, post_img_url_3, post_img_url_4, post_img_url_5);
+        //const user_id = req.verifiedToken.userId; // 추후에 토큰에서 추출하도록 수정
+        const params = req.body;
+        params.post_type = "BOAST"; // 게시글 타입: 질문글
+        
+        const result = await postService.createPost(params); // 이미지 저장 추후 구현
 
         // return 값 확인
         console.log("----------- return data -------------");
