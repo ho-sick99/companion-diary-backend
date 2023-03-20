@@ -3,6 +3,8 @@ const baseResponse = require("../../../config/baseResponseStatus");
 const { response, errResponse } = require("../../../config/response");
 const { POST_TYPE } = require("./decsionPostType");
 
+const fs = require("fs");
+
 // GET
 const output = {
     /*
@@ -39,8 +41,8 @@ const process = {
             return data.path; // 업로드받은 후 저장한 사진들의 경로
         })
         console.log(params);
-        // 이미지 경로를 dbdp 저장
-
+        // 이미지 경로를 db에 저장
+        
         return res.send(req.files);
 
         // const result = await postService.createPost(params); // 이미지 저장 추후 구현
