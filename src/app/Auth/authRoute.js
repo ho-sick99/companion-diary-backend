@@ -12,4 +12,7 @@ module.exports = function(app){
 
     // 서버 개발용 인가코드 발급
     app.get('/auth/kakao/serverAuth', serverAuth.getAuthorizationCode);
+
+    // 서버 개발용 토큰 발급
+    app.get('/auth/kakao/serverToken', serverAuth.getAuthorizationToken);
 };
