@@ -32,17 +32,25 @@ const process = {
      */
     postPostQuestion: async (req, res) => {
         //const user_id = req.verifiedToken.userId; // 추후에 토큰에서 추출하도록 수정
+        console.log(req.body);
         const params = req.body;
         params.post_type = "QUESTION"; // 게시글 타입: 질문글
-        
-        const result = await postService.createPost(params); // 이미지 저장 추후 구현
+        params.imagesPath = req.files.map((data) => {
+            return data.path; // 업로드받은 후 저장한 사진들의 경로
+        })
+        console.log(params);
+        // 이미지 경로를 dbdp 저장
 
-        // return 값 확인
-        console.log("----------- return data -------------");
-        console.log(result);
-        console.log("-------------------------------------");
+        return res.send(req.files);
 
-        return res.send(result);
+        // const result = await postService.createPost(params); // 이미지 저장 추후 구현
+
+        // // return 값 확인
+        // console.log("----------- return data -------------");
+        // console.log(result);
+        // console.log("-------------------------------------");
+
+        // return res.send(result);
     },
     /*
      * API No. 4
