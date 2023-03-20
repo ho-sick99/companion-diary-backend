@@ -1,3 +1,5 @@
+const { upload } = require("../../../config/multer");
+
 module.exports = function (app) {
     const post = require('./postController');
     const jwtMiddleware = require('../../../config/jwtMiddleware');
@@ -11,7 +13,7 @@ module.exports = function (app) {
     app.get("/posts", post.output.getPost)
 
     // 3.3 게시물 생성(질문글)
-    app.post('/posts/question', post.process.postPostQuestion);
+    app.post('/posts/question', upload.array('post_img'), post.process.postPostQuestion);
 
     // 3.4 게시물 생성(자랑글)
     app.post('/posts/boast', post.process.postPostBoast);

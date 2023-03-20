@@ -3,3 +3,6 @@ node_modules/*
 package-lock.json
 log/*
 .DS_Store
+
+# 사용자가 업로드한 이미지 정보
+uploads/*
