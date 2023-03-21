@@ -21,6 +21,14 @@ const output = {
     getPost: async (req, res) => {
         return res.send(await postService.getPost(req.query.ptype, req.query.pid));
     },
+    /*
+    * API No. 5
+    * API Name : 게시글 삭제
+    * [GET] /posts/:postId
+    */
+    deletePost: async (req, res) => {
+        return res.send(await postService.deletePost(req.verifiedToken.userId, req.params.postId));
+    }
 }
 
 // POST
@@ -31,7 +39,7 @@ const process = {
      * [POST] /posts/question
      */
     postPostQuestion: async (req, res) => {
-        const contents = postService.createContents(req.verifiedToken.userId, req.body, req.files); // 게시글 파라미터 생성
+        const contents = postService.createContents(req.verifiedToken.userId, req.body, req.files); // 게시글 콘텐츠 생성
         contents.post_type = "QUESTION"; // 게시글 타입: 질문글
 
         const result = await postService.createPost(contents); // 게시글 삽입
@@ -48,11 +56,10 @@ const process = {
      * [POST] /posts/boast
      */
     postPostBoast: async (req, res) => {
-        //const user_id = req.verifiedToken.userId; // 추후에 토큰에서 추출하도록 수정
-        const params = req.body;
-        params.post_type = "BOAST"; // 게시글 타입: 질문글
+        const contents = postService.createContents(req.verifiedToken.userId, req.body, req.files); // 게시글 콘텐츠 생성
+        contents.post_type = "BOAST"; // 게시글 타입: 질문글
 
-        const result = await postService.createPost(params); // 이미지 저장 추후 구현
+        const result = await postService.createPost(contents); // 게시글 삽입
 
         // return 값 확인
         console.log("----------- return data -------------");

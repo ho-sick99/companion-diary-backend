@@ -30,33 +30,55 @@ exports.createContents = (user_id, requestBody, requestFiles) => {
     }
     return contents; // 게시글 콘텐츠 반환
 }
-    // 게시물 조회
-    exports.getPost = async (post_type, post_id) => {
-        try {
-            // 댓글 메서드 추가해야함
-            const result = await postProvider.getPost(post_type, Number(post_id)); // post_id 숫자형으로 변환 
-            return response(baseResponse.SUCCESS, result[0]);
-        } catch (err) {
-            console.log("----------------------------------------------------------");
-            console.log(err);
-            console.log("----------------------------------------------------------");
 
-            return errResponse(baseResponse.DB_ERROR);
-        }
+// 게시물 조회
+exports.getPost = async (post_type, post_id) => {
+    try {
+        // 댓글 메서드 추가해야함
+        const result = await postProvider.getPost(post_type, Number(post_id)); // post_id 숫자형으로 변환 
+        return response(baseResponse.SUCCESS, result);
+    } catch (err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.DB_ERROR);
     }
+}
 
-    // 게시물 생성 (질문글)
-    exports.createPost = async (contents) => {
-        try {
-            await postProvider.createPost(contents);
+// 게시물 생성
+exports.createPost = async (contents) => {
+    try {
+        await postProvider.createPost(contents);
 
-            return response(baseResponse.SUCCESS);
+        return response(baseResponse.SUCCESS);
 
-        } catch (err) {
-            console.log("----------------------------------------------------------");
-            console.log(err);
-            console.log("----------------------------------------------------------");
+    } catch (err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
 
-            return errResponse(baseResponse.DB_ERROR);
-        }
+        return errResponse(baseResponse.DB_ERROR);
     }
+}
+
+exports.deletePost = async (user_id, post_id) => {
+    try {
+        const writer_id = (await postProvider.getPostWriterId(post_id)).user_id; // 게시글 작성자 id
+
+        if (writer_id != user_id) { // 현재 유저 id 와 게시글 작성자 id가 불일치
+            return response(baseResponse.FORBIDDEN);
+        }
+
+        await postProvider.deletePost(post_id);
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
