@@ -16,6 +16,6 @@ module.exports = function (app) {
     app.post('/posts/question', jwtMiddleware, upload.array('post_img'), post.process.postPostQuestion);
 
     // 3.4 게시물 생성(자랑글)
-    app.post('/posts/boast', jwtMiddleware, post.process.postPostBoast);
+    app.post('/posts/boast', jwtMiddleware, upload.array('post_img'), post.process.postPostBoast);
 
 };

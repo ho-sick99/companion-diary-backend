@@ -31,7 +31,7 @@ const process = {
      * [POST] /posts/question
      */
     postPostQuestion: async (req, res) => {
-        const contents = postService.createContents(req.verifiedToken.userId, req.body, req.files); // 게시글 파라미터 생성
+        const contents = postService.createContents(req.verifiedToken.userId, req.body, req.files); // 게시글 콘텐츠 생성
         contents.post_type = "QUESTION"; // 게시글 타입: 질문글
 
         const result = await postService.createPost(contents); // 게시글 삽입
