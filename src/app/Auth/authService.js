@@ -8,7 +8,6 @@ const axios = require('axios');
 const jwt = require("jsonwebtoken");
 
 exports.signIn = async function (token) {
-
     let userInfo;
     let user_id;
 
@@ -21,7 +20,7 @@ exports.signIn = async function (token) {
                 'Authorization' : 'Bearer ' + token
             }
         });
-
+        console.log(userInfo)
         const user_email = userInfo.data.kakao_account.email;
         const user_nickname = userInfo.data.properties.nickname;
         const user_profile_img = userInfo.data.properties.profile_image;
@@ -73,7 +72,7 @@ exports.signIn = async function (token) {
                         subject: "userInfo",
                     } // 유효 기간 365일
                 );
-        
+                console.log(jwtToken)
                 return response(baseResponse.SUCCESS, {'x-access-token': jwtToken});
         
             } catch (err) {

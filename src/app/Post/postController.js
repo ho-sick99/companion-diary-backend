@@ -1,7 +1,7 @@
 const postService = require("./postService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const { response, errResponse } = require("../../../config/response");
-const { POST_TYPE } = require("./decsionPostType");
+const fs = require("fs");
 
 // GET
 const output = {
@@ -31,26 +31,16 @@ const process = {
      * [POST] /posts/question
      */
     postPostQuestion: async (req, res) => {
-        //const user_id = req.verifiedToken.userId; // 추후에 토큰에서 추출하도록 수정
-        console.log(req.body);
-        const params = req.body;
-        params.post_type = "QUESTION"; // 게시글 타입: 질문글
-        params.imagesPath = req.files.map((data) => {
-            return data.path; // 업로드받은 후 저장한 사진들의 경로
-        })
-        console.log(params);
-        // 이미지 경로를 dbdp 저장
+        const contents = postService.createContents(req.verifiedToken.userId, req.body, req.files); // 게시글 파라미터 생성
+        contents.post_type = "QUESTION"; // 게시글 타입: 질문글
 
-        return res.send(req.files);
+        const result = await postService.createPost(contents); // 게시글 삽입
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
 
-        // const result = await postService.createPost(params); // 이미지 저장 추후 구현
-
-        // // return 값 확인
-        // console.log("----------- return data -------------");
-        // console.log(result);
-        // console.log("-------------------------------------");
-
-        // return res.send(result);
+        return res.send(result);
     },
     /*
      * API No. 4
@@ -61,7 +51,7 @@ const process = {
         //const user_id = req.verifiedToken.userId; // 추후에 토큰에서 추출하도록 수정
         const params = req.body;
         params.post_type = "BOAST"; // 게시글 타입: 질문글
-        
+
         const result = await postService.createPost(params); // 이미지 저장 추후 구현
 
         // return 값 확인

@@ -6,3 +6,10 @@ log/*
 
 # 사용자가 업로드한 이미지 정보
 uploads/*
+
+# SSL 인증서
+rootca.crt
+rootca.key
+
+# 환경변수
+.env

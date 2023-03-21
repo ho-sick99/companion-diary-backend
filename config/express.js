@@ -1,7 +1,10 @@
 const express = require('express');
+const dotenv = require("dotenv"); // 환경변수 라이브러리
 
 module.exports = function () {
     const app = express();
+    
+    dotenv.config(); // 환경변수 사용
 
     app.use(express.json());
 
