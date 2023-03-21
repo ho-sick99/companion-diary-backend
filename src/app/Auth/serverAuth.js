@@ -12,9 +12,7 @@ exports.getAuthorizationCode = async function (req, res) {
     서버 개발용 인가토큰 발급
 */
 exports.getAuthorizationToken = async function (req, res) {
-    console.log("a")
     let token = null;
-    console.log(req)
 
     try { //access토큰을 받기 위한 코드
         token = await axios({
@@ -35,5 +33,5 @@ exports.getAuthorizationToken = async function (req, res) {
     }
     console.log(token)
 
-    return res.send(token.access_token);
+    return res.send(token);
 };
