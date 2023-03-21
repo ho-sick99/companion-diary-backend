@@ -1,18 +1,41 @@
 const mysql = require('mysql2/promise');
 
+// 이미지 리스트 조회
+const selectImageUrls = async (connection) => {
+  // 이미지 조회 sql
+  const imgs = (await connection.query(`
+  SELECT post_img.post_id, post_img.img_url
+  FROM post, post_img
+  WHERE post.post_id = post_img.post_id;`))[0]; // 이미지 리스트 반환
+}
+
 // 질문글 리스트 조회
 const selectQuestionPostList = async (connection, pet_tag) => {
-  const query = mysql.format(`
+  // 질문글 조회 sql
+  const content_sql = mysql.format(`
     SELECT post.*, pet.pet_species, pet.pet_profile_img, user.user_nickname, post_title.post_title 
     FROM post, user, pet, post_title 
     WHERE post.user_id = user.user_id 
     and post.pet_id = pet.pet_id
     and post_title.post_id = post.post_id
     and post_type = 'QUESTION'
-    and pet.pet_tag=?;`, // post type: 1 -> 질문글
+    and pet.pet_tag=?;`,
     [pet_tag]);
-  const Rows = await connection.query(query);
-  return Rows[0];
+
+
+
+  const contents = (await connection.query(content_sql))[0]; // 질문글 리스트
+
+  // 질문글:이미지 = 1:N 매핑 (dp 사용)
+  let arr = Array.from({ length: contents.length }, () => []); // 마지막 게시글의 post_id 개수 만큼의 빈 배열 생성
+  for (let i = 0; i < imgs.length; i++) {
+    arr[imgs[i].post_id - 1].push(imgs[i].img_url);
+  }
+  for (let i = 0; i < contents.length; i++) {
+    contents[i].img_url = arr[contents[i].post_id - 1];
+  }
+
+  return contents;
 }
 
 // 자랑글 리스트 조회
@@ -23,7 +46,7 @@ const selectBoastPostList = async (connection, pet_tag) => {
     WHERE post.user_id = user.user_id 
     and post.pet_id = pet.pet_id
     and post_type = 'BOAST'
-    and pet.pet_tag=?;`, // post type: 2 -> 자랑글
+    and pet.pet_tag=?;`,
     [pet_tag]);
   const Rows = await connection.query(query);
 
