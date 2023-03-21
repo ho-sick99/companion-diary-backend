@@ -61,12 +61,20 @@ const selectBoastPost = async (connection, post_id) => {
   return Rows[0];
 }
 
-// 질문글 생성
-const createQustionPost = async (connection, params) => {
-  const post_id = (await connection.query(
+// 생성할 게시글 id 반환 메서드
+const getLastPostId = async (connection) => {
+  let post_id = (await connection.query(
     `SELECT MAX(post_id)+1 FROM post;`
   ))[0][0]['MAX(post_id)+1']; // 가장 최신 게시글 id + 1 = 현재 작성할 게시글 id
+  if (post_id == null) {
+    post_id = 1; // 작성된 게시글이 없을 경우의 초기 게시글 식별자 = 1
+  }
+  return post_id;
+}
 
+// 질문글 생성
+const createQustionPost = async (connection, params) => {
+  const post_id = await getLastPostId(connection); // 생성할 게시글 id
   // 게시글 삽입 sql
   const post_sql = mysql.format(`
       INSERT INTO post (post_id, pet_id, user_id, post_type, post_content) VALUES (?, ?, ?, ?, ?); `,
@@ -76,7 +84,17 @@ const createQustionPost = async (connection, params) => {
       INSERT INTO post_title (post_id, post_title) VALUES (?, ?);`,
     [post_id, params.post_title]);
 
-  const Rows = await connection.query(post_sql + post_title_sql);
+  const imagesPath = params.imagesPath; // 이미지들이 저장된 경로
+  let post_img_sql = ""; // 이미지 경로 삽입 sql
+  if (imagesPath) { // 이미지가 존재할 경우
+    imagesPath.map((img_url) => {
+      post_img_sql += mysql.format(`
+      INSERT INTO post_img (post_id, img_url) VALUES (?, ?);`, // 쿼리문 생성
+        [post_id, img_url]);
+    });
+  }
+  console.log(post_img_sql)
+  const Rows = await connection.query(post_sql + post_title_sql + post_img_sql);
 
   return Rows[0];
 }
@@ -89,7 +107,7 @@ const createBoastPost = async (connection, params) => {
     [params.pet_id, params.user_id, params.post_type, params.post_content]);
 
   const Rows = await connection.query(post_sql);
-  
+
   return Rows[0];
 }
 
