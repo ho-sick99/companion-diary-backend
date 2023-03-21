@@ -61,3 +61,24 @@ exports.createPost = async (contents) => {
         return errResponse(baseResponse.DB_ERROR);
     }
 }
+
+exports.deletePost = async (user_id, post_id) => {
+    try {
+        const writer_id = (await postProvider.getPostWriterId(post_id)).user_id; // 게시글 작성자 id
+
+        if (writer_id != user_id) { // 현재 유저 id 와 게시글 작성자 id가 불일치
+            return response(baseResponse.FORBIDDEN);
+        }
+
+        await postProvider.deletePost(post_id);
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}

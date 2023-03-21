@@ -21,6 +21,14 @@ const output = {
     getPost: async (req, res) => {
         return res.send(await postService.getPost(req.query.ptype, req.query.pid));
     },
+    /*
+    * API No. 5
+    * API Name : 게시글 삭제
+    * [GET] /posts/:postId
+    */
+    deletePost: async (req, res) => {
+        return res.send(await postService.deletePost(req.verifiedToken.userId, req.params.postId));
+    }
 }
 
 // POST

@@ -165,8 +165,27 @@ const createPost = async (connection, params) => {
   return Rows[0][0];
 }
 
+// 게시글 작성자 Id 반환
+const getPostWriterId = async (connection, post_id) => {
+  const query = mysql.format(`SELECT user_id FROM COMPAION_DIARY_DB.post WHERE post_id = ?;`, [post_id]);
+  const Rows = await connection.query(query);
+  return Rows[0][0];
+}
+
+// 게시글 삭제
+const deletePost = async (connection, post_id) => {
+  const delete_post_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.post WHERE post_id = ?;`, [post_id]);
+  const delete_post_title_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.post_title WHERE post_id = ?;`, [post_id]);
+  const delete_post_img_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.post_img WHERE post_id = ?;`, [post_id]);
+  const Rows = await connection.query(delete_post_sql + delete_post_title_sql + delete_post_img_sql);
+
+  return Rows[0][0];
+}
+
 module.exports = {
   selectPostList,
   selectPost,
   createPost,
+  getPostWriterId,
+  deletePost,
 };

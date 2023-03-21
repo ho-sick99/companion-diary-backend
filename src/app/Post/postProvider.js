@@ -32,3 +32,21 @@ exports.createPost = async (contents) => {
 
   return result;
 }
+
+// 게시글 작성자 Id 반환 메서드
+exports.getPostWriterId = async (post_id) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await postDao.getPostWriterId(connection, post_id);
+  connection.release();
+
+  return result;
+};
+
+// 게시글 삭제 메서드
+exports.deletePost = async (post_id) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await postDao.deletePost(connection, post_id);
+  connection.release();
+
+  return result;
+};

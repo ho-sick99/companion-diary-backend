@@ -16,7 +16,6 @@ module.exports = function (app) {
     // 3.4 게시물 생성(자랑글)
     app.post('/posts/boast', jwtMiddleware, upload.array('post_img'), post.process.postPostBoast);
 
-    // 3. 게시물 삭제
-    app.delete('/diarys/:diaryId', jwtMiddleware, diary.deleteDiarysDiaryId);
-    app.delete
+    // 3.5 게시물 삭제
+    app.delete('/posts/:postId', jwtMiddleware, post.output.deletePost);
 };
