@@ -123,18 +123,33 @@ const getLastPostId = async (connection) => {
   return post_id;
 }
 
-// 질문글 생성
-const createQustionPost = async (connection, params) => {
-  const post_id = await getLastPostId(connection); // 생성할 게시글 id
+const insert_post_sql = {
   // 게시글 삽입 sql
-  const post_sql = mysql.format(`
-      INSERT INTO post (post_id, pet_id, user_id, post_type, post_content) VALUES (?, ?, ?, ?, ?); `,
-    [post_id, params.pet_id, params.user_id, params.post_type, params.post_content]);
+  post_sql: (post_id, params) => {
+    return mysql.format(`
+    INSERT INTO post 
+    (post_id, pet_id, user_id, post_type, post_content) 
+    VALUES (?, ?, ?, ?, ?); `,
+      [post_id, params.pet_id, params.user_id, params.post_type, params.post_content]);
+  },
   // 게시글 제목 삽입 sql
-  const post_title_sql = mysql.format(`
-      INSERT INTO post_title (post_id, post_title) VALUES (?, ?);`,
-    [post_id, params.post_title]);
+  post_title_sql: (post_id, post_title) => {
+    return mysql.format(`
+    INSERT INTO post_title 
+    (post_id, post_title) 
+    VALUES (?, ?);`,
+      [post_id, post_title]);
 
+  }
+}
+
+// 게시글 생성
+const createPost = async (connection, params) => {
+  const post_id = await getLastPostId(connection); // 생성할 게시글 id
+  let post_sql = insert_post_sql.post_sql(post_id, params);
+  if (params.post_type == "QUESTION") { // 질문글의 경우
+    post_sql += insert_post_sql.post_title_sql(post_id, params.post_title); // 게시글 제목 삽입 sql문 추가
+  }
   const imagesPath = params.imagesPath; // 이미지들이 저장된 경로
   let post_img_sql = ""; // 이미지 경로 삽입 sql
   if (imagesPath) { // 이미지가 존재할 경우
@@ -144,26 +159,14 @@ const createQustionPost = async (connection, params) => {
         [post_id, img_url]);
     });
   }
-  const Rows = await connection.query(post_sql + post_title_sql + post_img_sql);
-  
+
+  const Rows = await connection.query(post_sql + post_img_sql);
+
   return Rows[0][0];
-}
-
-// 자랑글 생성
-const createBoastPost = async (connection, params) => {
-  // 게시글 삽입 sql
-  const post_sql = mysql.format(`
-      INSERT INTO post (pet_id, user_id, post_type, post_content) VALUES (?, ?, ?, ?); `,
-    [params.pet_id, params.user_id, params.post_type, params.post_content]);
-
-  const Rows = await connection.query(post_sql);
-
-  return Rows[0];
 }
 
 module.exports = {
   selectPostList,
   selectPost,
-  createQustionPost,
-  createBoastPost
+  createPost,
 };

@@ -7,7 +7,7 @@ const postDao = require("./postDao");
 exports.retrievePostList = async (post_type, pet_tag) => {
   const connection = await pool.getConnection(async (conn) => conn);
 
-  const result =  await postDao.selectPostList(connection, post_type, pet_tag); // 게시글 리스트 조회
+  const result = await postDao.selectPostList(connection, post_type, pet_tag); // 게시글 리스트 조회
   connection.release();
 
   return result;
@@ -16,25 +16,18 @@ exports.retrievePostList = async (post_type, pet_tag) => {
 // 게시물 조회
 exports.getPost = async (post_type, post_id) => {
   const connection = await pool.getConnection(async (conn) => conn);
-  
+
   const result = await postDao.selectPost(connection, post_type, post_id); // 게시글 조회
 
   connection.release();
-  
+
   return result;
 }
 
 // 게시글 생성
 exports.createPost = async (contents) => {
   const connection = await pool.getConnection(async (conn) => conn);
-  console.log(contents)
-  let result = null;
-  if (contents.post_type == "QUESTION") { // 질문글
-    result = await postDao.createQustionPost(connection, contents); // 질문글 생성
-  } else if (contents.post_type == "BOAST") { // 자랑글
-    result = await postDao.createBoastPost(connection, contents); // 자랑글 생성
-  }
-
+  const result = await postDao.createPost(connection, contents); // 게시글 생성
   connection.release();
 
   return result;

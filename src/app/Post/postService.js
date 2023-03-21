@@ -46,7 +46,7 @@ exports.getPost = async (post_type, post_id) => {
     }
 }
 
-// 게시물 생성 (질문글)
+// 게시물 생성
 exports.createPost = async (contents) => {
     try {
         await postProvider.createPost(contents);
