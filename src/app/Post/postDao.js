@@ -8,15 +8,19 @@ const selectImageUrls = async (connection) => {
   WHERE post.post_id = post_img.post_id;`))[0]; // 이미지 리스트 반환 sql
 }
 
-// 게시글:이미지 = 1:N 매핑 (dp 사용)
+// 게시글:이미지 = 1:N 매핑 (memoization)
 // 게시글 리스트에 적용
 const postListImgMapping = (posts, imgs) => {
-  let arr = Array.from({ length: posts.length }, () => []); // 마지막 게시글의 post_id 개수 만큼의 빈 배열 생성
-  for (let i = 0; i < imgs.length; i++) {
-    arr[imgs[i].post_id - 1].push(imgs[i].img_url);
+  let url_memo = Array.from({ length: posts[posts.length - 1].post_id }, () => []); // 마지막 게시글의 post_id개의 빈 배열 생성
+  for (let i = 0; i < imgs.length; i++) { // 이미지 리스트 순회
+    const current_img_post_id = imgs[i].post_id; // 현재 탐색중인 이미지의 post_id
+    if (current_img_post_id <= url_memo.length) { // 현재 탐색중인 이미지의 post_id가 마지막 게시글(질문글 or 자랑글)의 post_id를 초과하지 않을 때
+      url_memo[current_img_post_id - 1].push(imgs[i].img_url); // 게시글에 해당하는 메모 배열의 원소에 이미지 url 매핑
+    }
   }
+  
   for (let i = 0; i < posts.length; i++) {
-    posts[i].img_url = arr[posts[i].post_id - 1];
+    posts[i].img_url = url_memo[posts[i].post_id - 1]; // 게시글과 해당하는 메모 배열 매핑
   }
   return posts;
 }
