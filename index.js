@@ -24,7 +24,7 @@ const HTTPS_PORT = 3333;
 //     logger.info(`HTTPS Server Start At Port ${HTTPS_PORT}`);
 // });
 
-const port = 3000;
+const port = process.env.SERVER_PORT;
 
 express().listen(port, () => {
     const dir = "./uploads"; // 업로드된 파일을 저장할 경로
