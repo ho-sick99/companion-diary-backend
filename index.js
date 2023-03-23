@@ -1,6 +1,9 @@
 const express = require('./config/express');
 const { logger } = require('./config/winston');
 const fs = require("fs");
+const dotenv = require("dotenv"); // 환경변수 라이브러리
+
+dotenv.config(); // 환경변수 사용
 
 const http = require('http');
 const https = require('https');

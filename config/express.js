@@ -1,11 +1,8 @@
 const express = require('express');
-const dotenv = require("dotenv"); // 환경변수 라이브러리
 
 module.exports = function () {
     const app = express();
     
-    dotenv.config(); // 환경변수 사용
-
     app.use(express.json());
 
     // 객체 형태로 전달된 데이터 내에서 또다른 중첩된 객체 허용
