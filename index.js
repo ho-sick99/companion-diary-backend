@@ -11,11 +11,11 @@ const https = require('https');
 const HTTP_PORT = process.env.SERVER_PORT;
 const HTTPS_PORT = process.env.SECURE_SERVER_PORT;
 
-// // SSL 인증서 파일 불러오기
-// const options = {
-//     key: fs.readFileSync('./rootca.key'),
-//     cert: fs.readFileSync('./rootca.crt')
-//   };
+// SSL 인증서 파일 불러오기
+const options = {
+    key: fs.readFileSync(process.env.SSL_KEY),
+    cert: fs.readFileSync(process.env.SSL_CRT)
+  };
 
 // HTTP server 가동
 http.createServer(express).listen(HTTP_PORT, () => {
@@ -23,7 +23,7 @@ http.createServer(express).listen(HTTP_PORT, () => {
 });
 
 // HTTPS server 가동
-https.createServer(express).listen(HTTPS_PORT, () => {
+https.createServer(options, express).listen(HTTPS_PORT, () => {
     logger.info(`HTTPS Server Start At Port ${HTTPS_PORT}`);
 });
 
