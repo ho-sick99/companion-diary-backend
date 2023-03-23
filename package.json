@@ -8,8 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development node index.js",
     "prod": "NODE_ENV=production node index.js",
-    "provide": "pm2 start index.js",
-    "stop": "pm2 stop index.js"
+    "provide": "sudo pm2 start index.js",
+    "stop": "sudo pm2 stop index.js"
   },
   "repository": {
     "type": "git",
