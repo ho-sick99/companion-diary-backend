@@ -35,9 +35,9 @@ exports.retrieveDiaryOwnerId = async function (diary_id) {
   return result;
 };
 
-exports.modifyDiary = async function (pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id) {
+exports.modifyDiary = async function (contents) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const result = await diaryDao.updateSetDiary(connection, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id);
+  const result = await diaryDao.updateSetDiary(connection, contents);
   connection.release();
 
   return result;

@@ -53,6 +53,19 @@ const getLastDiaryId = async (connection) => {
   return diary_id;
 }
 
+// 일기 이미지 경로 삽입 sql
+const insertDiaryImgSql = (diary_id, imagesPath) => {
+  diary_img_sql = "";
+  if (imagesPath) { // 이미지가 존재할 경우
+    imagesPath.map((img_url) => {
+      diary_img_sql += mysql.format(`
+      INSERT INTO diary_img (diary_id, img_url) VALUES (?, ?);`, // 쿼리문 생성
+        [diary_id, img_url]);
+    });
+  }
+  return diary_img_sql;
+}
+
 // 일기 생성
 async function insertIntoDiary(connection, contents) {
   const diary_id = await getLastDiaryId(connection);
@@ -63,15 +76,7 @@ async function insertIntoDiary(connection, contents) {
   `,
     [diary_id, contents.pet_id, contents.user_id, contents.date, contents.diary_title, contents.diary_content]);
 
-  const imagesPath = contents.imagesPath; // 이미지들이 저장된 경로
-  let diary_img_sql = ""; // 이미지 경로 삽입 sql
-  if (imagesPath) { // 이미지가 존재할 경우
-    imagesPath.map((img_url) => {
-      diary_img_sql += mysql.format(`
-      INSERT INTO diary_img (diary_id, img_url) VALUES (?, ?);`, // 쿼리문 생성
-        [diary_id, img_url]);
-    });
-  }
+  const diary_img_sql = insertDiaryImgSql(diary_id, contents.imagesPath); // 이미지 경로 삽입 sql
 
   const Rows = await connection.query(diary_sql + diary_img_sql);
 
@@ -100,10 +105,19 @@ async function selectFromUserIdAtDiary(connection, diary_id) {
   return Rows[0];
 }
 
+// 주어진 일기에 해당하는 이미지들 삭제 sql
+const deleteDiaryImgSql = (diary_id) => {
+  return mysql.format(`DELETE FROM COMPAION_DIARY_DB.diary_img WHERE diary_id = ?;`, [diary_id])
+}
+
 // 일기 수정
-async function updateSetDiary(connection, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id) {
-  const query = mysql.format(`UPDATE COMPAION_DIARY_DB.diary SET pet_id = ?, date = ?, diary_title = ?, diary_content = ?, diary_img_url_1 = ?, diary_img_url_2 = ?, diary_img_url_3 = ?, diary_img_url_4 = ?, diary_img_url_5 = ? WHERE diary_id = ?;`, [pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id]);
-  const Rows = await connection.query(query);
+async function updateSetDiary(connection, contents) {
+  const delete_diary_img_sql = deleteDiaryImgSql(contents.content_id);
+  await connection.query(delete_diary_img_sql); // 현재 일기와 연관된 이미지들 삭제
+  const diary_update_query = mysql.format(`UPDATE COMPAION_DIARY_DB.diary SET pet_id = ?, date = ?, diary_title = ?, diary_content = ? WHERE diary_id = ?;`, [contents.pet_id, contents.date, contents.diary_title, contents.diary_content, contents.content_id]);
+  const diary_img_sql = insertDiaryImgSql(contents.content_id, contents.imagesPath); // 업데이트된 내용 + 새로운 이미지
+
+  const Rows = await connection.query(diary_update_query + diary_img_sql);
 
   return Rows[0];
 }
@@ -111,7 +125,7 @@ async function updateSetDiary(connection, pet_id, date, diary_title, diary_conte
 // 일기 삭제
 async function deleteFromDiary(connection, diary_id) {
   const delete_diary_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.diary WHERE diary_id = ?;`, [diary_id]);
-  const delete_diary_img_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.diary_img WHERE diary_id = ?;`, [diary_id]);
+  const delete_diary_img_sql = deleteDiaryImgSql(diary_id);
   const Rows = await connection.query(delete_diary_sql + delete_diary_img_sql);
 
   return Rows[0];

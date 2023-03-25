@@ -14,7 +14,7 @@ exports.getDiarys = async function (req, res) {
     const select_date_end = select_date + " 23:59:59";
 
     const result = await diaryService.getDiaryList(select_date_start, select_date_end, user_id);
-    
+
     // return 값 확인
     console.log("----------- return data -------------");
     console.log(result);
@@ -30,7 +30,7 @@ exports.getDiarys = async function (req, res) {
  */
 exports.postDiarys = async function (req, res) {
     const contents = postService.createContents(req.verifiedToken.userId, req.body, req.files); // 일기 콘텐츠 생성
-    
+
     const result = await diaryService.createDiary(contents);
 
     // return 값 확인
@@ -50,7 +50,7 @@ exports.postDiarys = async function (req, res) {
 //     const diary_id = req.params.diaryId;
 
 //     const result = await diaryService.getDiary(diary_id);
-    
+
 //     // return 값 확인
 //     console.log("----------- return data -------------");
 //     console.log(result);
@@ -65,19 +65,8 @@ exports.postDiarys = async function (req, res) {
  * [PUT] /diarys/:diaryId
  */
 exports.putDiarysDiaryId = async function (req, res) {
-    const user_id = req.verifiedToken.userId;
-    const pet_id = req.body.pet_id;
-    const date = req.body.date;
-    const diary_title = req.body.diary_title
-    const diary_content = req.body.diary_content
-    const diary_img_url_1 = req.body.diary_img_url_1
-    const diary_img_url_2 = req.body.diary_img_url_2
-    const diary_img_url_3 = req.body.diary_img_url_3
-    const diary_img_url_4 = req.body.diary_img_url_4
-    const diary_img_url_5 = req.body.diary_img_url_5
-    const diary_id = req.params.diaryId;
-
-    const result = await diaryService.modifyDiary(user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id);
+    const contents = postService.createContents(req.verifiedToken.userId, req.body, req.files, req.params.diaryId); // 일기 콘텐츠 생성
+    const result = await diaryService.modifyDiary(contents);
 
     // return 값 확인
     console.log("----------- return data -------------");

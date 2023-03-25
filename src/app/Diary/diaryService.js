@@ -52,21 +52,21 @@ exports.createDiary = async function (contents) {
 // }
 
 // 일기 수정
-exports.modifyDiary = async function (user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id) {
+exports.modifyDiary = async function (contents) {
     try {
         // 사용자 id == 일기 작성자 id인지 체크
         let diary_owner_id;
-        const Owner = await diaryProvider.retrieveDiaryOwnerId(diary_id);
-
+        const Owner = await diaryProvider.retrieveDiaryOwnerId(contents.content_id);
+        
         for (let data of Owner) {
             diary_owner_id = data.user_id;
         }
 
-        if (diary_owner_id != user_id) {
+        if (diary_owner_id != contents.user_id) {
             return response(baseResponse.FORBIDDEN);
         }
 
-        await diaryProvider.modifyDiary(pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5, diary_id);
+        await diaryProvider.modifyDiary(contents);
 
         return response(baseResponse.SUCCESS);
 
