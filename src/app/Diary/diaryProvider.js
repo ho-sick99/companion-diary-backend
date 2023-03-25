@@ -19,9 +19,9 @@ exports.retrieveDiaryList = async function (select_date_start, select_date_end, 
 //   return result;
 // };
 
-exports.createDiary = async function (user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5) {
+exports.createDiary = async function (contents) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const result = await diaryDao.insertIntoDiary(connection, user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5);
+  const result = await diaryDao.insertIntoDiary(connection, contents);
   connection.release();
 
   return result;

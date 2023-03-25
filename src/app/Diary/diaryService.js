@@ -20,9 +20,9 @@ exports.getDiaryList = async function (select_date_start, select_date_end, user_
 }
 
 // 일기 생성
-exports.createDiary = async function (user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5) {
+exports.createDiary = async function (contents) {
     try {
-        await diaryProvider.createDiary(user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5);
+        await diaryProvider.createDiary(contents);
 
         return response(baseResponse.SUCCESS);
 

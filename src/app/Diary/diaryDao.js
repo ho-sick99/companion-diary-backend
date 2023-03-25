@@ -15,12 +15,40 @@ async function selectFromAllDiaryList(connection, select_date_start, select_date
   return Rows[0];
 }
 
-// 일기 생성
-async function insertIntoDiary(connection, user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5) {
-  const query = mysql.format(`INSERT INTO COMPAION_DIARY_DB.diary(user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`, [user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5]);
-  const Rows = await connection.query(query);
+// 생성할 일기 id 반환 메서드
+const getLastDiaryId = async (connection) => {
+  let diary_id = (await connection.query(
+    `SELECT MAX(diary_id)+1 FROM diary;`
+  ))[0][0]['MAX(diary_id)+1']; // 가장 최신 게시글 id + 1 = 현재 작성할 게시글 id
+  if (diary_id == null) {
+    diary_id = 1; // 작성된 게시글이 없을 경우의 초기 게시글 식별자 = 1
+  }
+  return diary_id;
+}
 
-  return Rows[0];
+// 일기 생성
+async function insertIntoDiary(connection, contents) {
+  const diary_id = await getLastDiaryId(connection);
+  const diary_sql = mysql.format(`
+    INSERT INTO diary 
+    (diary_id, pet_id, user_id, date, diary_title, diary_content) 
+    VALUES (?, ?, ?, ?, ?, ?); 
+  `,
+    [diary_id, contents.pet_id, contents.user_id, contents.date, contents.diary_title, contents.diary_content]);
+
+  const imagesPath = contents.imagesPath; // 이미지들이 저장된 경로
+  let diary_img_sql = ""; // 이미지 경로 삽입 sql
+  if (imagesPath) { // 이미지가 존재할 경우
+    imagesPath.map((img_url) => {
+      diary_img_sql += mysql.format(`
+      INSERT INTO diary_img (diary_id, img_url) VALUES (?, ?);`, // 쿼리문 생성
+        [diary_id, img_url]);
+    });
+  }
+  
+  const Rows = await connection.query(diary_sql + diary_img_sql);
+
+  return Rows[0][0];
 }
 
 // 일기 조회
@@ -78,4 +106,3 @@ module.exports = {
   deleteFromDiary,
   selectDistinctFromDate,
 };
-  

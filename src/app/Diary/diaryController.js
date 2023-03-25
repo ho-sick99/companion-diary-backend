@@ -1,4 +1,5 @@
 const diaryService = require("./diaryService");
+const postService = require("../Post/postService");
 
 /*
  * API No. 1
@@ -28,18 +29,9 @@ exports.getDiarys = async function (req, res) {
  * [POST] /diarys
  */
 exports.postDiarys = async function (req, res) {
-    const user_id = req.verifiedToken.userId;
-    const pet_id = req.body.pet_id;
-    const date = req.body.date;
-    const diary_title = req.body.diary_title
-    const diary_content = req.body.diary_content
-    const diary_img_url_1 = req.body.diary_img_url_1
-    const diary_img_url_2 = req.body.diary_img_url_2
-    const diary_img_url_3 = req.body.diary_img_url_3
-    const diary_img_url_4 = req.body.diary_img_url_4
-    const diary_img_url_5 = req.body.diary_img_url_5
-
-    const result = await diaryService.createDiary(user_id, pet_id, date, diary_title, diary_content, diary_img_url_1, diary_img_url_2, diary_img_url_3, diary_img_url_4, diary_img_url_5);
+    const contents = postService.createContents(req.verifiedToken.userId, req.body, req.files); // 일기 콘텐츠 생성
+    
+    const result = await diaryService.createDiary(contents);
 
     // return 값 확인
     console.log("----------- return data -------------");
