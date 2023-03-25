@@ -84,6 +84,7 @@ exports.getUsersPet = async function (req, res) {
     return res.send(result);
 };
 
+// 펫 프로필 사진 경로 결정 메서드
 const setProfileImgURL = (pet_tag, pet_profile_img) => {
     pet_profile_img = "uploads/";
     if (pet_tag == "ANIMAL") {
@@ -142,12 +143,13 @@ exports.putUsersPet = async function (req, res) {
     const pet_age = req.body.pet_age;
     const pet_species = req.body.pet_species;
     const pet_sex = req.body.pet_sex;
-    let pet_profile_img = req.body.pet_profile_img;
+    let pet_profile_img = req.file; // 업로드한 이미지
     const pet_id = req.params.petId;
 
-    // pet_profile_img가 null 값이면 기본 이미지로 변경
-    if (pet_profile_img == null) {
-        pet_profile_img = setProfileImgURL(pet_profile_img);
+    if (pet_profile_img) { // 이미지가 존재할 경우
+        pet_profile_img = pet_profile_img.filename; // 업로드한 이미지의 이름
+    } else { // 이미지가 존재하지 않을 경우
+        pet_profile_img = setProfileImgURL(pet_tag, pet_profile_img); // 기본 이미지로 변경
     }
 
     const result = await userService.modifyPet(user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img, pet_id);
