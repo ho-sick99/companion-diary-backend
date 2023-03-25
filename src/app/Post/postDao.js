@@ -22,6 +22,7 @@ const postListImgMapping = (posts, imgs) => {
   for (let i = 0; i < posts.length; i++) {
     posts[i].img_url = url_memo[posts[i].post_id - 1]; // 게시글과 해당하는 메모 배열 매핑
   }
+  console.log(posts);
   return posts;
 }
 
