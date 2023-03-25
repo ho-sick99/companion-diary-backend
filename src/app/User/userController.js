@@ -31,10 +31,11 @@ exports.putUsers = async function (req, res) {
     const user_id = req.verifiedToken.userId;
     const user_email = req.verifiedToken.userEmail;
     const user_nickname = req.body.user_nickname;
-    let user_profile_img = req.body.user_profile_img;
-
-    // user_profile_img 값이 null 이면, 기본 이미지로 변경
-    if (user_profile_img == null) {
+    let user_profile_img = req.file;
+    
+    if (user_profile_img) { // 이미지가 존재할 경우
+        user_profile_img = user_profile_img.filename; // 업로드한 이미지의 이름
+    } else { // user_profile_img 값이 null 이면, 기본 이미지로 변경
         user_profile_img = "uploads/user_default.png";
     }
 
@@ -114,13 +115,13 @@ exports.postUsersPet = async function (req, res) {
     const pet_species = req.body.pet_species;
     const pet_sex = req.body.pet_sex;
     let pet_profile_img = req.file; // 업로드한 이미지
-    
+
     if (pet_profile_img) { // 이미지가 존재할 경우
         pet_profile_img = pet_profile_img.filename; // 업로드한 이미지의 이름
     } else { // 이미지가 존재하지 않을 경우
         pet_profile_img = setProfileImgURL(pet_tag, pet_profile_img); // 기본 이미지로 변경
     }
-    
+
     const result = await userService.addPet(user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img);
 
     // return 값 확인

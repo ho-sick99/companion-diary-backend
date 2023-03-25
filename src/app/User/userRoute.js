@@ -8,7 +8,7 @@ module.exports = function(app){
     app.get('/users', jwtMiddleware, user.getUsers);
 
     // 1.2 프로필 수정
-    app.put('/users', jwtMiddleware, upload.single('user_img'), user.putUsers); // 싱글 파일
+    app.put('/users', jwtMiddleware, upload.single('user_profile_img'), user.putUsers); // 싱글 파일
 
     // 1.3 회원 탈퇴
     app.delete('/users', jwtMiddleware, user.deleteUsers);
