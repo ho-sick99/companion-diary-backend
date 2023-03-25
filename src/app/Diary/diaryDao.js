@@ -45,7 +45,7 @@ async function insertIntoDiary(connection, contents) {
         [diary_id, img_url]);
     });
   }
-  
+
   const Rows = await connection.query(diary_sql + diary_img_sql);
 
   return Rows[0][0];
@@ -83,8 +83,9 @@ async function updateSetDiary(connection, pet_id, date, diary_title, diary_conte
 
 // 일기 삭제
 async function deleteFromDiary(connection, diary_id) {
-  const query = mysql.format(`DELETE FROM COMPAION_DIARY_DB.diary WHERE diary_id = ?;`, [diary_id]);
-  const Rows = await connection.query(query);
+  const delete_diary_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.diary WHERE diary_id = ?;`, [diary_id]);
+  const delete_diary_img_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.diary_img WHERE diary_id = ?;`, [diary_id]);
+  const Rows = await connection.query(delete_diary_sql + delete_diary_img_sql);
 
   return Rows[0];
 }

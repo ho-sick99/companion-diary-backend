@@ -14,7 +14,7 @@ module.exports = function(app){
     // app.get('/diarys/:diaryId', jwtMiddleware, diary.getDiarysDiaryId);
 
     // 4. 일기 수정
-    app.put('/diarys/:diaryId', jwtMiddleware, diary.putDiarysDiaryId);
+    app.put('/diarys/:diaryId', jwtMiddleware, upload.array('diary_img'), diary.putDiarysDiaryId);
 
     // 5. 일기 삭제
     app.delete('/diarys/:diaryId', jwtMiddleware, diary.deleteDiarysDiaryId);
