@@ -24,7 +24,6 @@ async function selectUsersAllPetList(connection, user_id) {
   return Rows[0];
 }
 
-
 // 사용자의 반려동식물 추가
 async function insertIntoPet(connection, user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img) {
   const query = mysql.format(`INSERT INTO COMPAION_DIARY_DB.pet(user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img) VALUES (?, ?, ?, ?, ?, ?, ?);`, [user_id, pet_tag, pet_name, pet_age, pet_species, pet_sex, pet_profile_img]);

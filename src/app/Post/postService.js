@@ -19,15 +19,19 @@ exports.getPostsList = async (post_type, pet_tag) => {
 }
 
 // 게시글 콘텐츠 생성
-exports.createContents = (user_id, requestBody, requestFiles) => {
+exports.createContents = (user_id, requestBody, requestFiles, content_id = null) => {
     const contents = requestBody; // 게시글 내용
     contents.user_id = user_id; // 토큰에서 추출한 유저 id
     const imgs = requestFiles; // 사용자가 업로드한 이미지들의 정보
     if (imgs) { // 이미지가 존재할 경우
         contents.imagesPath = requestFiles.map((data) => {
-            return data.path; // 업로드받은 후 저장한 사진들의 경로
+            return data.filename; // 업로드받은 후 저장한 사진들의 이름
         })
     }
+    if (content_id) { // 현재 생성하는 콘텐츠의 아이디가 있다면 (수정 작업)
+        contents.content_id = content_id; // 콘텐츠 아이디 지정
+    }
+
     return contents; // 게시글 콘텐츠 반환
 }
 

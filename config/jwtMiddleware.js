@@ -21,7 +21,7 @@ const jwtMiddleware = (req, res, next) => {
         try {
             // create a promise that decodes the token
             const tokenInfo = new Promise((resolve, reject) => {
-                jwt.verify(token, secret_config.jwtSecret , (err, verifiedToken) => {
+                jwt.verify(token, secret_config.jwtSecret , (err, verifiedToken) => { // 추후에 환경변수 처리
                     if(err) { reject(err); }
                     else { resolve(verifiedToken); }
                 });

@@ -21,7 +21,7 @@ exports.getAuthorizationToken = async (req, res) => {
         redirectUri: process.env.KAKAO_REDIRECTURL,
         code: req.query.code,
     };
-    console.log(qs.stringify(data))
+    
     try { // access 토큰 발급
         token = (await axios.post('https://kauth.kakao.com/oauth/token', qs.stringify(data), {
             headers: {
@@ -33,7 +33,6 @@ exports.getAuthorizationToken = async (req, res) => {
     }
 
     const loginToken = await authService.signIn(token.access_token); // access 토큰을 기반으로 jwt 토큰 발급
-    console.log(loginToken);
 
     return res.send(loginToken);
 };
