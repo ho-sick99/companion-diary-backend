@@ -21,14 +21,6 @@ const output = {
     getPost: async (req, res) => {
         return res.send(await postService.getPost(req.query.ptype, req.query.pid));
     },
-    /*
-    * API No. 5
-    * API Name : 게시글 삭제
-    * [GET] /posts/:postId
-    */
-    deletePost: async (req, res) => {
-        return res.send(await postService.deletePost(req.verifiedToken.userId, req.params.postId));
-    }
 }
 
 // POST
@@ -70,9 +62,42 @@ const process = {
     },
 }
 
+// PUT
+const edit = {
+    /*
+     * API No. 6
+     * API Name : 게시물 수정 (질문글)
+     * [PUT] /posts/boast/:postId
+     */
+    putPostQuestion: async () => {
+
+    },
+    /*
+     * API No. 7
+     * API Name : 게시물 수정 (자랑글)
+     * [PUT] /posts/boast/:postId
+     */
+    putPostBoast: async () => {
+
+    },
+}
+
+// DELETE
+const elimination = {
+    /*
+    * API No. 5
+    * API Name : 게시글 삭제
+    * [GET] /posts/:postId
+    */
+    deletePost: async (req, res) => {
+        return res.send(await postService.deletePost(req.verifiedToken.userId, req.params.postId));
+    }
+}
 
 // 모듈 export
 module.exports = {
     output,
     process,
+    edit,
+    elimination,
 };
