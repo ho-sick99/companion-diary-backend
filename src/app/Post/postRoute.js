@@ -20,9 +20,9 @@ module.exports = function (app) {
     app.delete('/posts/:postId', jwtMiddleware, post.elimination.deletePost);
 
     // 3.6 게시물 수정 (질문글)
-    app.put('/posts/question/:postId', jwtMiddleware, upload.array('post_img'), post.process.postPostQuestion); // 다중 파일
+    app.put('/posts/question/:postId', jwtMiddleware, upload.array('post_img'), post.edit.putPostQuestion); // 다중 파일
 
     // 3.7 게시물 수정 (자랑글)
-    app.put('/posts/boast/:postId', jwtMiddleware, upload.array('post_img'), post.process.postPostBoast); // 다중 파일
+    app.put('/posts/boast/:postId', jwtMiddleware, upload.array('post_img'), post.edit.putPostBoast); // 다중 파일
 
 };

@@ -42,6 +42,15 @@ exports.getPostWriterId = async (post_id) => {
   return result;
 };
 
+// 게시글 수정 메서드
+exports.modifyPost = async (contents) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await postDao.updatePost(connection, contents);
+  connection.release();
+
+  return result;
+};
+
 // 게시글 삭제 메서드
 exports.deletePost = async (post_id) => {
   const connection = await pool.getConnection(async (conn) => conn);

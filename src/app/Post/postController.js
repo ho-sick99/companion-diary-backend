@@ -49,7 +49,7 @@ const process = {
      */
     postPostBoast: async (req, res) => {
         const contents = postService.createContents(req.verifiedToken.userId, req.body, req.files); // 게시글 콘텐츠 생성
-        contents.post_type = "BOAST"; // 게시글 타입: 질문글
+        contents.post_type = "BOAST"; // 게시글 타입: 자랑글
 
         const result = await postService.createPost(contents); // 게시글 삽입
 
@@ -69,15 +69,25 @@ const edit = {
      * API Name : 게시물 수정 (질문글)
      * [PUT] /posts/boast/:postId
      */
-    putPostQuestion: async () => {
+    putPostQuestion: async (req, res) => {
+        const contents = postService.createContents(req.verifiedToken.userId, req.body, req.files, req.params.postId); // 게시글 콘텐츠 생성
+        contents.post_type = "QUESTION"; // 게시글 타입: 질문글
 
+        const result = await postService.modifyPost(contents); // 게시글 수정
+
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
+
+        return res.send(result);
     },
     /*
      * API No. 7
      * API Name : 게시물 수정 (자랑글)
      * [PUT] /posts/boast/:postId
      */
-    putPostBoast: async () => {
+    putPostBoast: async (req, res) => {
 
     },
 }
