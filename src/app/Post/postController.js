@@ -88,7 +88,17 @@ const edit = {
      * [PUT] /posts/boast/:postId
      */
     putPostBoast: async (req, res) => {
+        const contents = postService.createContents(req.verifiedToken.userId, req.body, req.files, req.params.postId); // 게시글 콘텐츠 생성
+        contents.post_type = "BOAST"; // 게시글 타입: 자랑글
 
+        const result = await postService.modifyPost(contents); // 게시글 수정
+
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
+
+        return res.send(result);
     },
 }
 
