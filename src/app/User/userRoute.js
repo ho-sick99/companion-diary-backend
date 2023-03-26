@@ -18,6 +18,7 @@ module.exports = function(app){
 
     // 1.5 동물/식물 추가
     app.post('/users/pet', jwtMiddleware, upload.single('pet_profile_img'), user.postUsersPet); // 싱글 파일
+    
     // 1.6 동물/식물 수정
     app.put('/users/pet/:petId', jwtMiddleware, upload.single('pet_profile_img'), user.putUsersPet); // 싱글 파일
 

@@ -144,7 +144,18 @@ const insert_post_sql = {
     (post_id, post_title) 
     VALUES (?, ?);`,
       [post_id, post_title]);
-
+  },
+  // 이미지 경로 삽입 sql
+  insertPostImgSql: (post_id, imagesPath) => {
+    let post_img_sql = ""; // 이미지 경로 삽입 sql
+    if (imagesPath) { // 이미지가 존재할 경우
+      imagesPath.map((img_url) => {
+        post_img_sql += mysql.format(`
+        INSERT INTO post_img (post_id, img_url) VALUES (?, ?);`, // 쿼리문 생성
+          [post_id, img_url]);
+      });
+    }
+    return post_img_sql;
   }
 }
 
@@ -155,15 +166,7 @@ const createPost = async (connection, params) => {
   if (params.post_type == "QUESTION") { // 질문글의 경우
     post_sql += insert_post_sql.post_title_sql(post_id, params.post_title); // 게시글 제목 삽입 sql문 추가
   }
-  const imagesPath = params.imagesPath; // 이미지들이 저장된 경로
-  let post_img_sql = ""; // 이미지 경로 삽입 sql
-  if (imagesPath) { // 이미지가 존재할 경우
-    imagesPath.map((img_url) => {
-      post_img_sql += mysql.format(`
-      INSERT INTO post_img (post_id, img_url) VALUES (?, ?);`, // 쿼리문 생성
-        [post_id, img_url]);
-    });
-  }
+  const post_img_sql = insert_post_sql.insertPostImgSql(post_id, params.imagesPath); // 이미지 경로 삽입 sql
 
   const Rows = await connection.query(post_sql + post_img_sql);
 
@@ -177,11 +180,43 @@ const getPostWriterId = async (connection, post_id) => {
   return Rows[0][0];
 }
 
+const update_post_sql = {
+  // 게시글 수정 sql
+  update_post_sql: (post_id, contents) => {
+    return mysql.format(`UPDATE post SET pet_id = ?, post_content = ?, updated_time = now() WHERE post_id = ?;`,
+      [contents.pet_id, contents.post_content, post_id]);
+  },
+  // 게시글 제목 수정 sql
+  update_post_title_sql: (post_id, post_title) => {
+    return mysql.format(`UPDATE post_title SET post_title = ? WHERE post_id = ?;`,
+      [post_title, post_id]);
+  }
+}
+
+// 게시글 수정
+const updatePost = async (connection, contents) => {
+  await connection.query(deletePostImgSql(contents.content_id)); // 현재 게시글과 연관된 이미지들 삭제
+  let update_sql = update_post_sql.update_post_sql(contents.content_id, contents);
+  if (contents.post_type == "QUESTION") { // 질문글의 경우
+    update_sql += update_post_sql.update_post_title_sql(contents.content_id, contents.post_title); // 게시글 제목 삽입 sql문 추가
+  }
+  const post_img_sql = insert_post_sql.insertPostImgSql(contents.content_id, contents.imagesPath); // 이미지 경로 삽입 sql
+
+  const Rows = await connection.query(update_sql + post_img_sql);
+
+  return Rows[0][0];
+}
+
+// 주어진 게시글에 해당하는 이미지들 삭제 sql
+const deletePostImgSql = (post_id) => {
+  return mysql.format(`DELETE FROM COMPAION_DIARY_DB.post_img WHERE post_id = ?;`, [post_id]);
+}
+
 // 게시글 삭제
 const deletePost = async (connection, post_id) => {
   const delete_post_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.post WHERE post_id = ?;`, [post_id]);
   const delete_post_title_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.post_title WHERE post_id = ?;`, [post_id]);
-  const delete_post_img_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.post_img WHERE post_id = ?;`, [post_id]);
+  const delete_post_img_sql = deletePostImgSql(post_id);
   const Rows = await connection.query(delete_post_sql + delete_post_title_sql + delete_post_img_sql);
 
   return Rows[0][0];
@@ -192,5 +227,6 @@ module.exports = {
   selectPost,
   createPost,
   getPostWriterId,
+  updatePost,
   deletePost,
 };

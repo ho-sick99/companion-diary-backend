@@ -112,8 +112,7 @@ const deleteDiaryImgSql = (diary_id) => {
 
 // 일기 수정
 async function updateSetDiary(connection, contents) {
-  const delete_diary_img_sql = deleteDiaryImgSql(contents.content_id);
-  await connection.query(delete_diary_img_sql); // 현재 일기와 연관된 이미지들 삭제
+  await connection.query(deleteDiaryImgSql(contents.content_id)); // 현재 일기와 연관된 이미지들 삭제
   const diary_update_query = mysql.format(`UPDATE COMPAION_DIARY_DB.diary SET pet_id = ?, date = ?, diary_title = ?, diary_content = ? WHERE diary_id = ?;`, [contents.pet_id, contents.date, contents.diary_title, contents.diary_content, contents.content_id]);
   const diary_img_sql = insertDiaryImgSql(contents.content_id, contents.imagesPath); // 업데이트된 내용 + 새로운 이미지
 
