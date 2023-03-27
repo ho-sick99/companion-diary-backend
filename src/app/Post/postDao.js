@@ -175,7 +175,7 @@ const createPost = async (connection, params) => {
 
 // 게시글 작성자 Id 반환
 const getPostWriterId = async (connection, post_id) => {
-  const query = mysql.format(`SELECT user_id FROM COMPAION_DIARY_DB.post WHERE post_id = ?;`, [post_id]);
+  const query = mysql.format(`SELECT user_id FROM post WHERE post_id = ?;`, [post_id]);
   const Rows = await connection.query(query);
   return Rows[0][0];
 }
