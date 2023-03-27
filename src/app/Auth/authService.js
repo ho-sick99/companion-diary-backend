@@ -72,7 +72,7 @@ exports.signIn = async function (token) {
                         subject: "userInfo",
                     } // 유효 기간 365일
                 );
-                console.log(jwtToken)
+                console.log("JWT" + jwtToken)
                 return response(baseResponse.SUCCESS, { 'x-access-token': jwtToken });
 
             } catch (err) {

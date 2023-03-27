@@ -21,7 +21,7 @@ exports.getAuthorizationToken = async (req, res) => {
         redirectUri: process.env.KAKAO_REDIRECTURL,
         code: req.query.code,
     };
-    
+
     try { // access 토큰 발급
         token = (await axios.post('https://kauth.kakao.com/oauth/token', qs.stringify(data), {
             headers: {
