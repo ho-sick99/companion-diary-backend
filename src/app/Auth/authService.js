@@ -1,8 +1,8 @@
 const secret_config = require("../../../config/secret");
 const authProvider = require("./authProvider");
 const baseResponse = require("../../../config/baseResponseStatus");
-const {response} = require("../../../config/response");
-const {errResponse} = require("../../../config/response");
+const { response } = require("../../../config/response");
+const { errResponse } = require("../../../config/response");
 
 const axios = require('axios');
 const jwt = require("jsonwebtoken");
@@ -14,10 +14,10 @@ exports.signIn = async function (token) {
     try {
         // access token으로 카카오 서버에 사용자 정보 요청
         userInfo = await axios({
-            method:'GET',
-            url:'https://kapi.kakao.com/v2/user/me',
-            headers:{
-                'Authorization' : 'Bearer ' + token
+            method: 'GET',
+            url: 'https://kapi.kakao.com/v2/user/me',
+            headers: {
+                'Authorization': 'Bearer ' + token
             }
         });
         console.log(userInfo)
@@ -61,20 +61,20 @@ exports.signIn = async function (token) {
                 //토큰 생성 Service
                 const jwtToken = jwt.sign(
                     {
-                        userId : user_id,
-                        userEmail : user_email,
-                        userNicname : user_nickname,
-                        userProfileImage : user_profile_img
+                        userId: user_id,
+                        userEmail: user_email,
+                        userNicname: user_nickname,
+                        userProfileImage: user_profile_img
                     }, // 토큰의 내용(payload)
-                    secret_config.jwtSecret, // 비밀키
+                    process.env.JWT_SECRET_KEY, // 비밀키
                     {
                         expiresIn: "365d",
                         subject: "userInfo",
                     } // 유효 기간 365일
                 );
                 console.log(jwtToken)
-                return response(baseResponse.SUCCESS, {'x-access-token': jwtToken});
-        
+                return response(baseResponse.SUCCESS, { 'x-access-token': jwtToken });
+
             } catch (err) {
                 console.log("\n----------------------------------------------------------");
                 console.log(err);
@@ -83,14 +83,14 @@ exports.signIn = async function (token) {
                 return errResponse(baseResponse.TOKEN_VERIFICATION_FAILURE);
             }
 
-        } catch(err) {
+        } catch (err) {
             console.log("\n----------------------------------------------------------");
             console.log(err);
             console.log("----------------------------------------------------------");
 
             return errResponse(baseResponse.DB_ERROR);
         }
-    } catch(err) {
+    } catch (err) {
         console.log("\n----------------------------------------------------------");
         console.log(err);
         console.log("----------------------------------------------------------");
