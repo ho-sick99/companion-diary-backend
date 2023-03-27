@@ -209,13 +209,13 @@ const updatePost = async (connection, contents) => {
 
 // 주어진 게시글에 해당하는 이미지들 삭제 sql
 const deletePostImgSql = (post_id) => {
-  return mysql.format(`DELETE FROM COMPAION_DIARY_DB.post_img WHERE post_id = ?;`, [post_id]);
+  return mysql.format(`DELETE FROM post_img WHERE post_id = ?;`, [post_id]);
 }
 
 // 게시글 삭제
 const deletePost = async (connection, post_id) => {
-  const delete_post_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.post WHERE post_id = ?;`, [post_id]);
-  const delete_post_title_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.post_title WHERE post_id = ?;`, [post_id]);
+  const delete_post_sql = mysql.format(`DELETE FROM post WHERE post_id = ?;`, [post_id]);
+  const delete_post_title_sql = mysql.format(`DELETE FROM post_title WHERE post_id = ?;`, [post_id]);
   const delete_post_img_sql = deletePostImgSql(post_id);
   const Rows = await connection.query(delete_post_sql + delete_post_title_sql + delete_post_img_sql);
 

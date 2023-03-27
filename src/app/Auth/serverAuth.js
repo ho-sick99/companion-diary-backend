@@ -31,7 +31,7 @@ exports.getAuthorizationToken = async (req, res) => {
     } catch (err) {
         res.json(err);
     }
-
+    
     const loginToken = await authService.signIn(token.access_token); // access 토큰을 기반으로 jwt 토큰 발급
 
     return res.send(loginToken);

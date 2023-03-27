@@ -99,7 +99,7 @@ async function insertIntoDiary(connection, contents) {
 
 // 일기 작성자 조회
 async function selectFromUserIdAtDiary(connection, diary_id) {
-  const query = mysql.format(`SELECT user_id FROM COMPAION_DIARY_DB.diary WHERE diary_id = ?;`, [diary_id]);
+  const query = mysql.format(`SELECT user_id FROM diary WHERE diary_id = ?;`, [diary_id]);
   const Rows = await connection.query(query);
 
   return Rows[0];
@@ -107,13 +107,13 @@ async function selectFromUserIdAtDiary(connection, diary_id) {
 
 // 주어진 일기에 해당하는 이미지들 삭제 sql
 const deleteDiaryImgSql = (diary_id) => {
-  return mysql.format(`DELETE FROM COMPAION_DIARY_DB.diary_img WHERE diary_id = ?;`, [diary_id])
+  return mysql.format(`DELETE FROM diary_img WHERE diary_id = ?;`, [diary_id])
 }
 
 // 일기 수정
 async function updateSetDiary(connection, contents) {
   await connection.query(deleteDiaryImgSql(contents.content_id)); // 현재 일기와 연관된 이미지들 삭제
-  const diary_update_query = mysql.format(`UPDATE COMPAION_DIARY_DB.diary SET pet_id = ?, date = ?, diary_title = ?, diary_content = ? WHERE diary_id = ?;`, [contents.pet_id, contents.date, contents.diary_title, contents.diary_content, contents.content_id]);
+  const diary_update_query = mysql.format(`UPDATE diary SET pet_id = ?, date = ?, diary_title = ?, diary_content = ? WHERE diary_id = ?;`, [contents.pet_id, contents.date, contents.diary_title, contents.diary_content, contents.content_id]);
   const diary_img_sql = insertDiaryImgSql(contents.content_id, contents.imagesPath); // 업데이트된 내용 + 새로운 이미지
 
   const Rows = await connection.query(diary_update_query + diary_img_sql);
@@ -123,7 +123,7 @@ async function updateSetDiary(connection, contents) {
 
 // 일기 삭제
 async function deleteFromDiary(connection, diary_id) {
-  const delete_diary_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.diary WHERE diary_id = ?;`, [diary_id]);
+  const delete_diary_sql = mysql.format(`DELETE FROM diary WHERE diary_id = ?;`, [diary_id]);
   const delete_diary_img_sql = deleteDiaryImgSql(diary_id);
   const Rows = await connection.query(delete_diary_sql + delete_diary_img_sql);
 
@@ -133,7 +133,7 @@ async function deleteFromDiary(connection, diary_id) {
 // 월별 일기 날짜 리스트 불러오기
 async function selectDistinctFromDate(connection, user_id, select_date_start, select_date_end) {
   const query = mysql.format(`SELECT DISTINCT DATE_FORMAT(date, '%d') AS "day"
-   FROM COMPAION_DIARY_DB.diary WHERE date BETWEEN ? AND ? AND user_id = ?;`, [select_date_start, select_date_end, user_id]);
+   FROM diary WHERE date BETWEEN ? AND ? AND user_id = ?;`, [select_date_start, select_date_end, user_id]);
   const Rows = await connection.query(query);
 
   return Rows[0];
