@@ -91,6 +91,7 @@ const get_post_sql = {
 
 // 게시글 리스트 조회
 const selectPostList = async (connection, post_type, pet_tag) => {
+  console.log(connection);
   let post_sql = null;
   if (post_type == "QUESTION") { // 질문글
     post_sql = get_post_list_sql.question_list_sql(pet_tag);
