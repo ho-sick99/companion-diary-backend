@@ -175,7 +175,7 @@ const createPost = async (connection, params) => {
 
 // 게시글 작성자 Id 반환
 const getPostWriterId = async (connection, post_id) => {
-  const query = mysql.format(`SELECT user_id FROM COMPAION_DIARY_DB.post WHERE post_id = ?;`, [post_id]);
+  const query = mysql.format(`SELECT user_id FROM post WHERE post_id = ?;`, [post_id]);
   const Rows = await connection.query(query);
   return Rows[0][0];
 }
@@ -209,18 +209,63 @@ const updatePost = async (connection, contents) => {
 
 // 주어진 게시글에 해당하는 이미지들 삭제 sql
 const deletePostImgSql = (post_id) => {
-  return mysql.format(`DELETE FROM COMPAION_DIARY_DB.post_img WHERE post_id = ?;`, [post_id]);
+  return mysql.format(`DELETE FROM post_img WHERE post_id = ?;`, [post_id]);
 }
 
 // 게시글 삭제
 const deletePost = async (connection, post_id) => {
-  const delete_post_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.post WHERE post_id = ?;`, [post_id]);
-  const delete_post_title_sql = mysql.format(`DELETE FROM COMPAION_DIARY_DB.post_title WHERE post_id = ?;`, [post_id]);
+  const delete_post_sql = mysql.format(`DELETE FROM post WHERE post_id = ?;`, [post_id]);
+  const delete_post_title_sql = mysql.format(`DELETE FROM post_title WHERE post_id = ?;`, [post_id]);
   const delete_post_img_sql = deletePostImgSql(post_id);
   const Rows = await connection.query(delete_post_sql + delete_post_title_sql + delete_post_img_sql);
 
   return Rows[0][0];
 }
+
+// 키워드로 검색 sql
+const search_post_list_sql = {
+  // 질문글 검색결과 조회 sql
+  search_question_list_sql: (pet_tag, keyword) => {
+    return mysql.format(`
+    SELECT post.*, pet.pet_species, pet.pet_profile_img, user.user_nickname, post_title.post_title 
+    FROM post, user, pet, post_title 
+    WHERE post.user_id = user.user_id 
+    and post.pet_id = pet.pet_id
+    and post_title.post_id = post.post_id
+    and post_type = 'QUESTION'
+    and pet.pet_tag = ?
+    and (post_title.post_title like ? or post.post_content like ? or user.user_nickname like ? or pet.pet_species like ?);`, // 제목, 내용, 유저 닉네임, 펫 종에 따른 검색
+      [pet_tag, keyword, keyword, keyword, keyword]);
+  },
+  // 자랑글 검색결과 조회 sql
+  search_boast_list_sql: (pet_tag, keyword) => {
+    return mysql.format(`
+      SELECT post.*, pet.pet_species, pet.pet_profile_img, user.user_nickname 
+      FROM post, user, pet 
+      WHERE post.user_id = user.user_id 
+      and post.pet_id = pet.pet_id
+      and post_type = 'BOAST'
+      and pet.pet_tag = ?
+      and (post.post_content like ? or user.user_nickname like ? or pet.pet_species like ?);`, // 내용, 유저 닉네임, 펫 종에 따른 검색
+      [pet_tag, keyword, keyword, keyword]);
+  },
+}
+
+// 게시글 검색
+const searchPostList = async (connection, keyword, post_type, pet_tag) => {
+  let post_sql = null;
+  keyword = '%' + keyword + '%'; // 키워드 와일드카드 형식으로 변경
+  if (post_type == "QUESTION") { // 질문글
+    post_sql = search_post_list_sql.search_question_list_sql(pet_tag, keyword);
+  } else if (post_type == "BOAST") { // 자랑글
+    post_sql = search_post_list_sql.search_boast_list_sql(pet_tag, keyword);
+  }
+  const posts = (await connection.query(post_sql))[0]; // 게시글 리스트
+  const imgs = await selectImageUrls(connection); // 이미지 리스트
+  const contents = postListImgMapping(posts, imgs); // 게시글, 이미지 매핑
+  return contents; // 게시글 리스트 반환
+}
+
 
 module.exports = {
   selectPostList,
@@ -229,4 +274,5 @@ module.exports = {
   getPostWriterId,
   updatePost,
   deletePost,
+  searchPostList,
 };

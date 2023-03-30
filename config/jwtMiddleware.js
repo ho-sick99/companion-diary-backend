@@ -14,15 +14,15 @@ const jwtMiddleware = (req, res, next) => {
         const token = req.headers['x-access-token'];
 
         // token does not exist
-        if(!token) {
+        if (!token) {
             return res.send(errResponse(baseResponse.TOKEN_EMPTY));
         }
 
         try {
             // create a promise that decodes the token
             const tokenInfo = new Promise((resolve, reject) => {
-                jwt.verify(token, secret_config.jwtSecret , (err, verifiedToken) => { // 추후에 환경변수 처리
-                    if(err) { reject(err); }
+                jwt.verify(token, process.env.JWT_SECRET_KEY, (err, verifiedToken) => {
+                    if (err) { reject(err); }
                     else { resolve(verifiedToken); }
                 });
             });
@@ -34,7 +34,7 @@ const jwtMiddleware = (req, res, next) => {
                 next();
             });
 
-        } catch(err) {
+        } catch (err) {
             console.log("\n----------------------------------------------------------");
             console.log(err);
             console.log("----------------------------------------------------------");
@@ -42,14 +42,14 @@ const jwtMiddleware = (req, res, next) => {
             return res.send(errResponse(baseResponse.TOKEN_VERIFICATION_FAILURE));
         }
 
-    } catch(err) {
+    } catch (err) {
         console.log("\n----------------------------------------------------------");
         console.log(err);
         console.log("----------------------------------------------------------");
 
         return res.send(errResponse(baseResponse.SERVER_ERROR));
     }
-    
+
 };
 
 module.exports = jwtMiddleware;

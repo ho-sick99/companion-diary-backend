@@ -21,6 +21,14 @@ const output = {
     getPost: async (req, res) => {
         return res.send(await postService.getPost(req.query.ptype, req.query.pid));
     },
+    /*
+    * API No. 8
+    * API Name : 게시글 검색
+    * [GET] /posts/question/animal/result?keyword&ptype&ptag
+    */
+    searchPost: async (req, res) => {
+        return res.send(await postService.getSearchPostList(req.query.keyword, req.query.ptype, req.query.ptag))
+    }   
 }
 
 // POST

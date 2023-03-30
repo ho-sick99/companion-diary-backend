@@ -25,4 +25,7 @@ module.exports = function (app) {
     // 3.7 게시물 수정 (자랑글)
     app.put('/posts/boast/:postId', jwtMiddleware, upload.array('post_img'), post.edit.putPostBoast); // 다중 파일
 
+    // 3.8 게시물 검색
+    app.get('/posts/search', jwtMiddleware, post.output.searchPost);
+    
 };

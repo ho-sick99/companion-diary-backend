@@ -109,3 +109,16 @@ exports.deletePost = async (user_id, post_id) => {
         return errResponse(baseResponse.DB_ERROR);
     }
 }
+
+exports.getSearchPostList = async (keyword, post_type, pet_tag) => {
+    try {
+        const result = await postProvider.searchPostList(keyword, post_type, pet_tag); // 검색 키워드, 게시글 타입, 동식물 태그
+        return response(baseResponse.SUCCESS, result);
+    } catch (err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}

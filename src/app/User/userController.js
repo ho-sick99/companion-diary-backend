@@ -36,7 +36,7 @@ exports.putUsers = async function (req, res) {
     if (user_profile_img) { // 이미지가 존재할 경우
         user_profile_img = user_profile_img.filename; // 업로드한 이미지의 이름
     } else { // user_profile_img 값이 null 이면, 기본 이미지로 변경
-        user_profile_img = "uploads/user_default.png";
+        user_profile_img = "user_default.png";
     }
 
     const result = await userService.putUsers(user_id, user_email, user_nickname, user_profile_img);
@@ -87,7 +87,7 @@ exports.getUsersPet = async function (req, res) {
 
 // 펫 프로필 사진 경로 결정 메서드
 const setProfileImgURL = (pet_tag, pet_profile_img) => {
-    pet_profile_img = "uploads/";
+    pet_profile_img = "";
     if (pet_tag == "ANIMAL") {
         pet_profile_img += "animal";
 

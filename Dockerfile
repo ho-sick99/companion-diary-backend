@@ -10,5 +10,5 @@ COPY ./ ./
 # node의 종속성 다운로드
 RUN npm install
 
-# 서버 가동 (nodemon 사용)
-CMD ["npm", "start"]
+# 서버 가동 (pm2 사용)
+CMD ["npm", "run", "provide"]
