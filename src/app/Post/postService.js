@@ -54,7 +54,7 @@ exports.getPost = async (post_type, post_id) => {
 exports.createPost = async (contents) => {
     try {
         await postProvider.createPost(contents);
-        
+
         return response(baseResponse.SUCCESS);
 
     } catch (err) {
@@ -79,7 +79,7 @@ exports.modifyPost = async (contents) => {
 
         return response(baseResponse.SUCCESS);
 
-    } catch(err) {
+    } catch (err) {
         console.log("----------------------------------------------------------");
         console.log(err);
         console.log("----------------------------------------------------------");
@@ -110,13 +110,26 @@ exports.deletePost = async (user_id, post_id) => {
     }
 }
 
+// 게시글 검색
+exports.getSearchPostList = async (keyword, post_type, pet_tag) => {
+    try {
+        const result = await postProvider.searchPostList(keyword, post_type, pet_tag); // 검색 키워드, 게시글 타입, 동식물 태그
+        return response(baseResponse.SUCCESS, result);
+    } catch (err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
+
 // 댓글 작성
 exports.createComment = async (contents) => {
     try {
         await postProvider.createComment(contents);
 
         return response(baseResponse.SUCCESS);
-
     } catch (err) {
         console.log("----------------------------------------------------------");
         console.log(err);

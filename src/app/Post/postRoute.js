@@ -30,4 +30,5 @@ module.exports = function (app) {
 
     // 3.9 댓글 작성
     app.post('/posts/comment', jwtMiddleware, post.process.postComment);
+    
 };

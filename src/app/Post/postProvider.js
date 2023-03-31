@@ -60,6 +60,16 @@ exports.deletePost = async (post_id) => {
   return result;
 };
 
+// 게시글 검색 메서드
+exports.searchPostList = async (keyword, post_type, pet_tag) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+
+  const result = await postDao.searchPostList(connection, keyword, post_type, pet_tag); // 게시글 리스트 조회
+  connection.release();
+
+  return result;
+}
+
 // 댓글 작성 메서드
 exports.createComment = async (contents) => {
   const connection = await pool.getConnection(async (conn) => conn);

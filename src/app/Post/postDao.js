@@ -91,7 +91,6 @@ const get_post_sql = {
 
 // 게시글 리스트 조회
 const selectPostList = async (connection, post_type, pet_tag) => {
-  console.log(connection);
   let post_sql = null;
   if (post_type == "QUESTION") { // 질문글
     post_sql = get_post_list_sql.question_list_sql(pet_tag);
@@ -234,6 +233,51 @@ const createComment = async (connection, contents) => {
   return Rows[0][0];
 }
 
+// 키워드로 검색 sql
+const search_post_list_sql = {
+  // 질문글 검색결과 조회 sql
+  search_question_list_sql: (pet_tag, keyword) => {
+    return mysql.format(`
+    SELECT post.*, pet.pet_species, pet.pet_profile_img, user.user_nickname, post_title.post_title 
+    FROM post, user, pet, post_title 
+    WHERE post.user_id = user.user_id 
+    and post.pet_id = pet.pet_id
+    and post_title.post_id = post.post_id
+    and post_type = 'QUESTION'
+    and pet.pet_tag = ?
+    and (post_title.post_title like ? or post.post_content like ? or user.user_nickname like ? or pet.pet_species like ?);`, // 제목, 내용, 유저 닉네임, 펫 종에 따른 검색
+      [pet_tag, keyword, keyword, keyword, keyword]);
+  },
+  // 자랑글 검색결과 조회 sql
+  search_boast_list_sql: (pet_tag, keyword) => {
+    return mysql.format(`
+      SELECT post.*, pet.pet_species, pet.pet_profile_img, user.user_nickname 
+      FROM post, user, pet 
+      WHERE post.user_id = user.user_id 
+      and post.pet_id = pet.pet_id
+      and post_type = 'BOAST'
+      and pet.pet_tag = ?
+      and (post.post_content like ? or user.user_nickname like ? or pet.pet_species like ?);`, // 내용, 유저 닉네임, 펫 종에 따른 검색
+      [pet_tag, keyword, keyword, keyword]);
+  },
+}
+
+// 게시글 검색
+const searchPostList = async (connection, keyword, post_type, pet_tag) => {
+  let post_sql = null;
+  keyword = '%' + keyword + '%'; // 키워드 와일드카드 형식으로 변경
+  if (post_type == "QUESTION") { // 질문글
+    post_sql = search_post_list_sql.search_question_list_sql(pet_tag, keyword);
+  } else if (post_type == "BOAST") { // 자랑글
+    post_sql = search_post_list_sql.search_boast_list_sql(pet_tag, keyword);
+  }
+  const posts = (await connection.query(post_sql))[0]; // 게시글 리스트
+  const imgs = await selectImageUrls(connection); // 이미지 리스트
+  const contents = postListImgMapping(posts, imgs); // 게시글, 이미지 매핑
+  return contents; // 게시글 리스트 반환
+}
+
+
 module.exports = {
   selectPostList,
   selectPost,
@@ -242,4 +286,5 @@ module.exports = {
   updatePost,
   deletePost,
   createComment,
+  searchPostList,
 };

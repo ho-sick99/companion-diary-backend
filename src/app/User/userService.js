@@ -17,7 +17,7 @@ exports.putUsers = async function (user_id, user_email, user_nickname, user_prof
                     userNicname : user_nickname,
                     userProfileImage : user_profile_img
                 }, // 토큰의 내용(payload)
-                secret_config.jwtSecret, // 비밀키
+                process.env.JWT_SECRET_KEY, // 비밀키
                 {
                     expiresIn: "365d",
                     subject: "userInfo",
