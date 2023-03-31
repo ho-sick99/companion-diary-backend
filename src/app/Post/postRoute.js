@@ -28,4 +28,6 @@ module.exports = function (app) {
     // 3.8 게시물 검색
     app.get('/posts/search', jwtMiddleware, post.output.searchPost);
 
+    // 3.9 댓글 작성
+    app.post('/posts/comment', jwtMiddleware, post.process.postComment);
 };

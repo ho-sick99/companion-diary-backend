@@ -18,8 +18,8 @@ exports.getPostsList = async (post_type, pet_tag) => {
     }
 }
 
-// 게시글 콘텐츠 생성
-exports.createContents = (user_id, requestBody, requestFiles, content_id = null) => {
+// 게시글, 댓글 콘텐츠 생성
+exports.createContents = (user_id, requestBody, requestFiles = null, content_id = null) => {
     const contents = requestBody; // 게시글 내용
     contents.user_id = user_id; // 토큰에서 추출한 유저 id
     const imgs = requestFiles; // 사용자가 업로드한 이미지들의 정보
@@ -32,7 +32,7 @@ exports.createContents = (user_id, requestBody, requestFiles, content_id = null)
         contents.content_id = content_id; // 콘텐츠 아이디 지정
     }
 
-    return contents; // 게시글 콘텐츠 반환
+    return contents; // 콘텐츠 반환
 }
 
 // 게시물 조회
@@ -54,7 +54,7 @@ exports.getPost = async (post_type, post_id) => {
 exports.createPost = async (contents) => {
     try {
         await postProvider.createPost(contents);
-
+        
         return response(baseResponse.SUCCESS);
 
     } catch (err) {
@@ -98,6 +98,22 @@ exports.deletePost = async (user_id, post_id) => {
         }
 
         await postProvider.deletePost(post_id);
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
+
+// 댓글 작성
+exports.createComment = async (contents) => {
+    try {
+        await postProvider.createComment(contents);
 
         return response(baseResponse.SUCCESS);
 

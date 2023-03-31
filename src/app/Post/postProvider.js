@@ -59,3 +59,12 @@ exports.deletePost = async (post_id) => {
 
   return result;
 };
+
+// 댓글 작성 메서드
+exports.createComment = async (contents) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await postDao.createComment(connection, contents);
+  connection.release();
+
+  return result;
+}

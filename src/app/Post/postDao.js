@@ -223,6 +223,17 @@ const deletePost = async (connection, post_id) => {
   return Rows[0][0];
 }
 
+// 댓글 작성
+const createComment = async (connection, contents) => {
+  const Rows = await connection.query(`
+    insert into post_comment (post_id, user_id, comment_content, subordination) values (?, ?, ?, ?);
+  `,
+    [contents.post_id, contents.user_id, contents.comment_content, contents.subordination]
+  );
+
+  return Rows[0][0];
+}
+
 module.exports = {
   selectPostList,
   selectPost,
@@ -230,4 +241,5 @@ module.exports = {
   getPostWriterId,
   updatePost,
   deletePost,
+  createComment,
 };

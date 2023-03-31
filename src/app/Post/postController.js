@@ -68,6 +68,23 @@ const process = {
 
         return res.send(result);
     },
+    /*
+     * API No. 9
+     * API Name : 댓글 작성
+     * [POST] /posts/comment
+     */
+    postComment: async (req, res) => {
+        const contents = postService.createContents(req.verifiedToken.userId, req.body); // 게시글 콘텐츠 생성
+
+        const result = await postService.createComment(contents); // 댓글 삽입
+
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
+
+        return res.send(result);
+    }
 }
 
 // PUT
