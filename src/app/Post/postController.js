@@ -28,7 +28,7 @@ const output = {
     */
     searchPost: async (req, res) => {
         return res.send(await postService.getSearchPostList(req.query.keyword, req.query.ptype, req.query.ptag))
-    }   
+    }
 }
 
 // POST
@@ -125,6 +125,23 @@ const edit = {
 
         return res.send(result);
     },
+    /*
+     * API No. 10
+     * API Name : 댓글 수정
+     * [PUT] /posts/comment/:commentId
+     */
+    putComment: async (req, res) => {
+        const contents = postService.createContents(req.verifiedToken.userId, req.body, null, req.params.commentId); // 댓글 콘텐츠 생성
+
+        const result = await postService.modifyComment(contents); // 댓글 수정
+
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
+
+        return res.send(result);
+    }
 }
 
 // DELETE

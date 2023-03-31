@@ -294,6 +294,16 @@ const deleteComment = async (connection, comment_id) => {
   return Rows[0][0];
 }
 
+// 댓글 수정
+const updateComment = async (connection, contents) => {
+  const Rows = await connection.query(`
+    UPDATE post_comment SET comment_content = ? WHERE comment_id = ?;
+  `,
+    [contents.comment_content, contents.content_id]);
+
+  return Rows[0][0];
+}
+
 module.exports = {
   selectPostList,
   selectPost,
@@ -304,5 +314,6 @@ module.exports = {
   createComment,
   searchPostList,
   getCommentWriterId,
+  updateComment,
   deleteComment,
 };

@@ -66,7 +66,7 @@ exports.createPost = async (contents) => {
     }
 }
 
-// 일기 수정
+// 게시글 수정
 exports.modifyPost = async (contents) => {
     try {
         const writer_id = (await postProvider.getPostWriterId(contents.content_id)).user_id; // 게시글 작성자 id
@@ -149,6 +149,28 @@ exports.deleteComment = async (user_id, comment_id) => {
         }
 
         await postProvider.deleteComment(comment_id);
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
+
+// 댓글 수정
+exports.modifyComment = async (contents) => {
+    try {
+        const writer_id = (await postProvider.getCommentWriterId(contents.content_id)).user_id; // 게시글 작성자 id
+
+        if (writer_id != contents.user_id) { // 현재 유저 id 와 게시글 작성자 id가 불일치
+            return response(baseResponse.FORBIDDEN);
+        }
+
+        await postProvider.modifyComment(contents);
 
         return response(baseResponse.SUCCESS);
 

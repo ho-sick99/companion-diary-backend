@@ -88,6 +88,15 @@ exports.getCommentWriterId = async (comment_id) => {
   return result;
 };
 
+// 댓글 수정 메서드
+exports.modifyComment = async (contents) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await postDao.updateComment(connection, contents);
+  connection.release();
+
+  return result;
+};
+
 // 댓글 삭제 메서드
 exports.deleteComment = async (comment_id) => {
   const connection = await pool.getConnection(async (conn) => conn);
