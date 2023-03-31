@@ -31,4 +31,7 @@ module.exports = function (app) {
     // 3.9 댓글 작성
     app.post('/posts/comment', jwtMiddleware, post.process.postComment);
     
+    // 3.11 댓글 삭제
+    app.delete('/posts/comment/:commentId', jwtMiddleware, post.elimination.deleteComment);
+
 };

@@ -136,7 +136,15 @@ const elimination = {
     */
     deletePost: async (req, res) => {
         return res.send(await postService.deletePost(req.verifiedToken.userId, req.params.postId));
-    }
+    },
+    /*
+    * API No. 11
+    * API Name : 댓글 삭제
+    * [GET] /posts/comment/:commentId
+    */
+    deleteComment: async (req, res) => {
+        return res.send(await postService.deleteComment(req.verifiedToken.userId, req.params.commentId));
+    },
 }
 
 // 모듈 export

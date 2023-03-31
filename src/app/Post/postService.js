@@ -138,3 +138,25 @@ exports.createComment = async (contents) => {
         return errResponse(baseResponse.DB_ERROR);
     }
 }
+
+// 댓글 삭제
+exports.deleteComment = async (user_id, comment_id) => {
+    try {
+        const writer_id = (await postProvider.getCommentWriterId(comment_id)).user_id; // 게시글 작성자 id
+
+        if (writer_id != user_id) { // 현재 유저 id 와 게시글 작성자 id가 불일치
+            return response(baseResponse.FORBIDDEN);
+        }
+
+        await postProvider.deleteComment(comment_id);
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}

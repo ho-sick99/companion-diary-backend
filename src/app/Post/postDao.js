@@ -222,17 +222,6 @@ const deletePost = async (connection, post_id) => {
   return Rows[0][0];
 }
 
-// 댓글 작성
-const createComment = async (connection, contents) => {
-  const Rows = await connection.query(`
-    insert into post_comment (post_id, user_id, comment_content, subordination) values (?, ?, ?, ?);
-  `,
-    [contents.post_id, contents.user_id, contents.comment_content, contents.subordination]
-  );
-
-  return Rows[0][0];
-}
-
 // 키워드로 검색 sql
 const search_post_list_sql = {
   // 질문글 검색결과 조회 sql
@@ -277,6 +266,33 @@ const searchPostList = async (connection, keyword, post_type, pet_tag) => {
   return contents; // 게시글 리스트 반환
 }
 
+// 댓글 작성
+const createComment = async (connection, contents) => {
+  const Rows = await connection.query(`
+    insert into post_comment (post_id, user_id, comment_content, subordination) values (?, ?, ?, ?);
+  `,
+    [contents.post_id, contents.user_id, contents.comment_content, contents.subordination]
+  );
+
+  return Rows[0][0];
+}
+
+// 댓글 작성자 Id 반환
+const getCommentWriterId = async (connection, comment_id) => {
+  const query = mysql.format(`SELECT user_id FROM post_comment WHERE comment_id = ?;`, [comment_id]);
+  const Rows = await connection.query(query);
+  return Rows[0][0];
+}
+
+// 댓글 삭제
+const deleteComment = async (connection, comment_id) => {
+  const Rows = await connection.query(`
+    DELETE FROM post_comment WHERE comment_id = ?;
+  `,
+    [comment_id]);
+
+  return Rows[0][0];
+}
 
 module.exports = {
   selectPostList,
@@ -287,4 +303,6 @@ module.exports = {
   deletePost,
   createComment,
   searchPostList,
+  getCommentWriterId,
+  deleteComment,
 };
