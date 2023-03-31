@@ -266,13 +266,25 @@ const searchPostList = async (connection, keyword, post_type, pet_tag) => {
   return contents; // 게시글 리스트 반환
 }
 
+// 게시글 댓글 개수 갱신 sql
+const comment_count_update_sql = (post_id) => {
+  return mysql.format(`
+  UPDATE post SET comment_count = (select count(*) from post_comment where post_id = ?) WHERE post_id = ?;
+  `,
+    [post_id, post_id]
+  );
+}
+
 // 댓글 작성
 const createComment = async (connection, contents) => {
-  const Rows = await connection.query(`
-    insert into post_comment (post_id, user_id, comment_content, subordination) values (?, ?, ?, ?);
+  const comment_sql = mysql.format(`
+    INSERT into post_comment (post_id, user_id, comment_content, subordination) VALUES (?, ?, ?, ?);
   `,
     [contents.post_id, contents.user_id, contents.comment_content, contents.subordination]
   );
+  const update_sql = comment_count_update_sql(contents.post_id);
+  
+  const Rows = await connection.query(comment_sql + update_sql);
 
   return Rows[0][0];
 }
@@ -281,6 +293,16 @@ const createComment = async (connection, contents) => {
 const getCommentWriterId = async (connection, comment_id) => {
   const query = mysql.format(`SELECT user_id FROM post_comment WHERE comment_id = ?;`, [comment_id]);
   const Rows = await connection.query(query);
+  return Rows[0][0];
+}
+
+// 댓글 수정
+const updateComment = async (connection, contents) => {
+  const Rows = await connection.query(`
+    UPDATE post_comment SET comment_content = ? WHERE comment_id = ?;
+  `,
+    [contents.comment_content, contents.content_id]);
+
   return Rows[0][0];
 }
 
@@ -294,15 +316,6 @@ const deleteComment = async (connection, comment_id) => {
   return Rows[0][0];
 }
 
-// 댓글 수정
-const updateComment = async (connection, contents) => {
-  const Rows = await connection.query(`
-    UPDATE post_comment SET comment_content = ? WHERE comment_id = ?;
-  `,
-    [contents.comment_content, contents.content_id]);
-
-  return Rows[0][0];
-}
 
 module.exports = {
   selectPostList,
