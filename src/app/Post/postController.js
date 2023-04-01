@@ -11,7 +11,7 @@ const output = {
     * [GET] /posts/list?ptype&ptag
     */
     getPosts: async (req, res) => {
-        return res.send(await postService.getPostsList(req.query.ptype, req.query.ptag));
+        return res.send(await postService.getPostsList(req.verifiedToken.userId, req.query.ptype, req.query.ptag));
     },
     /*
     * API No. 2

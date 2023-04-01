@@ -4,10 +4,10 @@ const postDao = require("./postDao");
 // Provider: Read 비즈니스 로직 처리
 
 // 게시글 리스트 조회
-exports.retrievePostList = async (post_type, pet_tag) => {
+exports.retrievePostList = async (user_id, post_type, pet_tag) => {
   const connection = await pool.getConnection(async (conn) => conn);
 
-  const result = await postDao.selectPostList(connection, post_type, pet_tag); // 게시글 리스트 조회
+  const result = await postDao.selectPostList(connection, user_id, post_type, pet_tag); // 게시글 리스트 조회
   connection.release();
 
   return result;

@@ -40,27 +40,29 @@ const postImgMapping = (post, imgs) => {
 // 게시글 리스트 조회 sql
 const get_post_list_sql = {
   // 질문글 리스트 조회 sql
-  question_list_sql: (pet_tag) => {
+  question_list_sql: (pet_tag, user_id) => {
     return mysql.format(`
-      SELECT post.*, pet.pet_species, pet.pet_profile_img, user.user_nickname, post_title.post_title 
-      FROM post, user, pet, post_title 
-      WHERE post.user_id = user.user_id 
-      and post.pet_id = pet.pet_id
-      and post_title.post_id = post.post_id
-      and post_type = 'QUESTION'
-      and pet.pet_tag=?;`,
-      [pet_tag]);
+    SELECT post.*, pet.pet_species, pet.pet_profile_img, user.user_nickname, post_title.post_title 
+    FROM post, user, pet, post_title 
+    WHERE post.user_id = user.user_id 
+    and post.pet_id = pet.pet_id
+    and post_title.post_id = post.post_id
+    and post_type = 'QUESTION'
+    and pet.pet_tag=?
+    and post.post_id not in (SELECT post_id FROM post_hide WHERE user_id = ?);`,
+      [pet_tag, user_id]);
   },
   // 자랑글 리스트 조회 sql
-  boast_list_sql: (pet_tag) => {
+  boast_list_sql: (pet_tag, user_id) => {
     return mysql.format(`
       SELECT post.*, pet.pet_species, pet.pet_profile_img, user.user_nickname 
       FROM post, user, pet 
       WHERE post.user_id = user.user_id 
       and post.pet_id = pet.pet_id
       and post_type = 'BOAST'
-      and pet.pet_tag=?;`,
-      [pet_tag]);
+      and pet.pet_tag=?
+      and post.post_id not in (SELECT post_id FROM post_hide WHERE user_id = ?);`,
+      [pet_tag, user_id]);
   },
 }
 
@@ -90,16 +92,19 @@ const get_post_sql = {
 }
 
 // 게시글 리스트 조회
-const selectPostList = async (connection, post_type, pet_tag) => {
+const selectPostList = async (connection, user_id, post_type, pet_tag) => {
   let post_sql = null;
   if (post_type == "QUESTION") { // 질문글
-    post_sql = get_post_list_sql.question_list_sql(pet_tag);
+    post_sql = get_post_list_sql.question_list_sql(pet_tag, user_id);
   } else if (post_type == "BOAST") { // 자랑글
-    post_sql = get_post_list_sql.boast_list_sql(pet_tag);
+    post_sql = get_post_list_sql.boast_list_sql(pet_tag, user_id);
   }
   const posts = (await connection.query(post_sql))[0]; // 게시글 리스트
   const imgs = await selectImageUrls(connection); // 이미지 리스트
-  const contents = postListImgMapping(posts, imgs); // 게시글, 이미지 매핑
+  let contents = []
+  if (posts.length > 0) { // 게시글이 존재한다면
+    contents = postListImgMapping(posts, imgs); // 게시글, 이미지 매핑
+  }
   return contents; // 게시글 리스트 반환
 }
 
@@ -122,7 +127,6 @@ const selectPost = async (connection, post_type, post_id) => {
   }
   const post = (await connection.query(post_sql))[0][0]; // 게시글
   const imgs = await selectImageUrls(connection); // 이미지 리스트
-
   const contents = postImgMapping(post, imgs); // 게시글, 이미지 매핑
   contents.comments = await getPostComments(connection, post_id);; // 게시글에 작성된 댓글 리스트 삽입
   return contents; // 게시글 반환

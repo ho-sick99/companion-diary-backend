@@ -4,10 +4,10 @@ const { response } = require("../../../config/response");
 const { errResponse } = require("../../../config/response");
 
 // 게시글 list 조회
-exports.getPostsList = async (post_type, pet_tag) => {
+exports.getPostsList = async (user_id, post_type, pet_tag) => {
     try {
         // 댓글 개수 반환 메서드 추가해야함
-        const result = await postProvider.retrievePostList(post_type, pet_tag); // 게시글 타입, 동식물 태그
+        const result = await postProvider.retrievePostList(user_id, post_type, pet_tag); // 유저 식별자, 게시글 타입, 동식물 태그
         return response(baseResponse.SUCCESS, result);
     } catch (err) {
         console.log("----------------------------------------------------------");
