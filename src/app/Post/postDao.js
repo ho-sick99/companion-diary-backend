@@ -227,7 +227,11 @@ const deletePost = async (connection, post_id) => {
   const delete_post_sql = mysql.format(`DELETE FROM post WHERE post_id = ?;`, [post_id]);
   const delete_post_title_sql = mysql.format(`DELETE FROM post_title WHERE post_id = ?;`, [post_id]);
   const delete_post_img_sql = deletePostImgSql(post_id);
-  const Rows = await connection.query(delete_post_sql + delete_post_title_sql + delete_post_img_sql);
+  const delete_comment_sql = mysql.format(`
+    DELETE FROM post_comment WHERE post_id = ?;
+  `,
+    [post_id]); // 게시글 댓글 삭제 sql
+  const Rows = await connection.query(delete_post_sql + delete_post_title_sql + delete_post_img_sql + delete_comment_sql);
 
   return Rows[0][0];
 }
