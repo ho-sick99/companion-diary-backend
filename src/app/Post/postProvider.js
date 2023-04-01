@@ -105,3 +105,15 @@ exports.deleteComment = async (contents) => {
 
   return result;
 };
+
+// 게시글 신고 메서드
+exports.reportPost = async (post_id) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await postDao.reportPost(connection, post_id); // 게시글 신고횟수 1회 증가
+  if (result.report_count >= 3) { // 게시글의 누적 신고 횟수가 3회 이상일 경우
+    await postDao.deletePost(connection, post_id); // 게시글 삭제
+  }
+  connection.release();
+
+  return result;
+}

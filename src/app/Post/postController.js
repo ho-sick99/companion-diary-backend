@@ -141,6 +141,21 @@ const edit = {
         console.log("-------------------------------------");
 
         return res.send(result);
+    },
+    /*
+     * API No. 12
+     * API Name : 게시물 신고
+     * [POST] /posts/service/:postId
+     */
+    putReport: async (req, res) => {
+        const result = await postService.reportPost(req.params.postId); // 게시물 신고
+
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
+
+        return res.send(result);
     }
 }
 

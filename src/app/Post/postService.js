@@ -182,3 +182,19 @@ exports.modifyComment = async (contents) => {
         return errResponse(baseResponse.DB_ERROR);
     }
 }
+
+// 댓글 신고
+exports.reportPost = async (post_id) => {
+    try {
+        await postProvider.reportPost(post_id);
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}

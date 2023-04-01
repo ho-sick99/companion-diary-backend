@@ -22,7 +22,6 @@ const postListImgMapping = (posts, imgs) => {
   for (let i = 0; i < posts.length; i++) {
     posts[i].img_url = url_memo[posts[i].post_id - 1]; // 게시글과 해당하는 메모 배열 매핑
   }
-  console.log(posts);
   return posts;
 }
 
@@ -107,7 +106,7 @@ const selectPostList = async (connection, post_type, pet_tag) => {
 const getPostComments = async (connection, post_id) => {
   return (await connection.query(`
   SELECT * FROM post_comment WHERE post_id = ?;
-`,
+  `,
     [post_id]
   ))[0];
 }
@@ -334,6 +333,17 @@ const deleteComment = async (connection, contents) => {
   return Rows[0][0];
 }
 
+// 게시글 신고
+const reportPost = async (connection, post_id) => {
+  const Rows = await connection.query(`
+    UPDATE post SET report_count = report_count + 1 WHERE post_id = ?;
+    SELECT report_count FROM post WHERE post_id = ?;
+  `,
+    [post_id, post_id]); // 게시글 신고 횟수 1 증가 후 반환
+
+  return Rows[0][1]; // 누적된 게시글 신고 횟수 반환
+}
+
 
 module.exports = {
   selectPostList,
@@ -347,4 +357,5 @@ module.exports = {
   getCommentWriterId,
   updateComment,
   deleteComment,
+  reportPost,
 };
