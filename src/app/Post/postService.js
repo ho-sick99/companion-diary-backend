@@ -198,3 +198,19 @@ exports.reportPost = async (post_id) => {
         return errResponse(baseResponse.DB_ERROR);
     }
 }
+
+// 게시물 숨기기
+exports.hidePost = async (user_id, post_id) => {
+    try {
+        await postProvider.hidePost(user_id, post_id);
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        console.log("----------------------------------------------------------");
+        console.log(err);
+        console.log("----------------------------------------------------------");
+
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}

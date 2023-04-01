@@ -84,6 +84,21 @@ const process = {
         console.log("-------------------------------------");
 
         return res.send(result);
+    },
+    /*
+     * API No. 13
+     * API Name : 게시물 숨기기
+     * [POST] /posts/service/:postId
+     */
+    hidePost: async (req, res) => {
+        const result = await postService.hidePost(req.verifiedToken.userId, req.params.postId); // 게시글 숨기기
+
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
+
+        return res.send(result);
     }
 }
 

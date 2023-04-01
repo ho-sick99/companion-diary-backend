@@ -117,3 +117,12 @@ exports.reportPost = async (post_id) => {
 
   return result;
 }
+
+// 게시글 숨기기 메서드
+exports.hidePost = async (user_id, post_id) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const result = await postDao.hidePost(connection, user_id, post_id); 
+  connection.release();
+
+  return result;
+}

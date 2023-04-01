@@ -40,4 +40,6 @@ module.exports = function (app) {
     // 3.12 게시물 신고
     app.put('/posts/service/:postId', jwtMiddleware, post.edit.putReport);
 
+    // 3.13 게시물 숨기기
+    app.post('/posts/service/:postId', jwtMiddleware, post.process.hidePost);
 };

@@ -103,6 +103,7 @@ const selectPostList = async (connection, post_type, pet_tag) => {
   return contents; // 게시글 리스트 반환
 }
 
+// 게시글 댓글 리스트 반환
 const getPostComments = async (connection, post_id) => {
   return (await connection.query(`
   SELECT * FROM post_comment WHERE post_id = ?;
@@ -348,6 +349,16 @@ const reportPost = async (connection, post_id) => {
   return Rows[0][1]; // 누적된 게시글 신고 횟수 반환
 }
 
+// 게시글 숨기기
+const hidePost = async (connection, user_id, post_id) => {
+  const Rows = await connection.query(`
+    INSERT INTO post_hide (user_id, post_id) VALUES (?, ?);
+  `,
+    [user_id, post_id]); // 숨김 게시글 추가
+
+  return Rows[0][0];
+}
+
 
 module.exports = {
   selectPostList,
@@ -362,4 +373,5 @@ module.exports = {
   updateComment,
   deleteComment,
   reportPost,
+  hidePost,
 };
