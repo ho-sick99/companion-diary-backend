@@ -122,7 +122,7 @@ const selectPost = async (connection, post_type, post_id) => {
   }
   const post = (await connection.query(post_sql))[0][0]; // 게시글
   const imgs = await selectImageUrls(connection); // 이미지 리스트
-  
+
   const contents = postImgMapping(post, imgs); // 게시글, 이미지 매핑
   contents.comments = await getPostComments(connection, post_id);; // 게시글에 작성된 댓글 리스트 삽입
   return contents; // 게시글 반환
@@ -310,7 +310,7 @@ const getCommentWriterId = async (connection, comment_id) => {
 // 댓글 수정
 const updateComment = async (connection, contents) => {
   const Rows = await connection.query(`
-    UPDATE post_comment SET comment_content = ? WHERE comment_id = ?;
+    UPDATE post_comment SET comment_content = ?, updated_time = now() WHERE comment_id = ?;
   `,
     [contents.comment_content, contents.content_id]);
 
