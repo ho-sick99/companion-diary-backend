@@ -22,7 +22,6 @@ const postListImgMapping = (posts, imgs) => {
   for (let i = 0; i < posts.length; i++) {
     posts[i].img_url = url_memo[posts[i].post_id - 1]; // 게시글과 해당하는 메모 배열 매핑
   }
-  console.log(posts);
   return posts;
 }
 
@@ -38,33 +37,36 @@ const postImgMapping = (post, imgs) => {
   return post;
 }
 
-// 게시글 조회 sql
+// 게시글 리스트 조회 sql
 const get_post_list_sql = {
   // 질문글 리스트 조회 sql
-  question_list_sql: (pet_tag) => {
+  question_list_sql: (pet_tag, user_id) => {
     return mysql.format(`
-      SELECT post.*, pet.pet_species, pet.pet_profile_img, user.user_nickname, post_title.post_title 
-      FROM post, user, pet, post_title 
-      WHERE post.user_id = user.user_id 
-      and post.pet_id = pet.pet_id
-      and post_title.post_id = post.post_id
-      and post_type = 'QUESTION'
-      and pet.pet_tag=?;`,
-      [pet_tag]);
+    SELECT post.*, pet.pet_species, pet.pet_profile_img, user.user_nickname, post_title.post_title 
+    FROM post, user, pet, post_title 
+    WHERE post.user_id = user.user_id 
+    and post.pet_id = pet.pet_id
+    and post_title.post_id = post.post_id
+    and post_type = 'QUESTION'
+    and pet.pet_tag=?
+    and post.post_id not in (SELECT post_id FROM post_hide WHERE user_id = ?);`,
+      [pet_tag, user_id]);
   },
   // 자랑글 리스트 조회 sql
-  boast_list_sql: (pet_tag) => {
+  boast_list_sql: (pet_tag, user_id) => {
     return mysql.format(`
       SELECT post.*, pet.pet_species, pet.pet_profile_img, user.user_nickname 
       FROM post, user, pet 
       WHERE post.user_id = user.user_id 
       and post.pet_id = pet.pet_id
       and post_type = 'BOAST'
-      and pet.pet_tag=?;`,
-      [pet_tag]);
+      and pet.pet_tag=?
+      and post.post_id not in (SELECT post_id FROM post_hide WHERE user_id = ?);`,
+      [pet_tag, user_id]);
   },
 }
 
+// 게시글 조회 sql
 const get_post_sql = {
   question_sql: (post_id) => {
     return mysql.format(`
@@ -90,17 +92,31 @@ const get_post_sql = {
 }
 
 // 게시글 리스트 조회
-const selectPostList = async (connection, post_type, pet_tag) => {
+const selectPostList = async (connection, user_id, post_type, pet_tag) => {
   let post_sql = null;
   if (post_type == "QUESTION") { // 질문글
-    post_sql = get_post_list_sql.question_list_sql(pet_tag);
+    post_sql = get_post_list_sql.question_list_sql(pet_tag, user_id);
   } else if (post_type == "BOAST") { // 자랑글
-    post_sql = get_post_list_sql.boast_list_sql(pet_tag);
+    post_sql = get_post_list_sql.boast_list_sql(pet_tag, user_id);
   }
   const posts = (await connection.query(post_sql))[0]; // 게시글 리스트
   const imgs = await selectImageUrls(connection); // 이미지 리스트
-  const contents = postListImgMapping(posts, imgs); // 게시글, 이미지 매핑
+  let contents = []
+  if (posts.length > 0) { // 게시글이 존재한다면
+    contents = postListImgMapping(posts, imgs); // 게시글, 이미지 매핑
+  }
   return contents; // 게시글 리스트 반환
+}
+
+// 게시글 댓글 리스트 반환
+const getPostComments = async (connection, post_id) => {
+  return (await connection.query(`
+    SELECT post_comment.*, user.user_nickname 
+    FROM post_comment, user 
+    WHERE post_comment.post_id = ? and post_comment.user_id = user.user_id;
+  `,
+    [post_id]
+  ))[0];
 }
 
 // 게시글 조회
@@ -114,6 +130,7 @@ const selectPost = async (connection, post_type, post_id) => {
   const post = (await connection.query(post_sql))[0][0]; // 게시글
   const imgs = await selectImageUrls(connection); // 이미지 리스트
   const contents = postImgMapping(post, imgs); // 게시글, 이미지 매핑
+  contents.comments = await getPostComments(connection, post_id);; // 게시글에 작성된 댓글 리스트 삽입
   return contents; // 게시글 반환
 }
 
@@ -217,7 +234,11 @@ const deletePost = async (connection, post_id) => {
   const delete_post_sql = mysql.format(`DELETE FROM post WHERE post_id = ?;`, [post_id]);
   const delete_post_title_sql = mysql.format(`DELETE FROM post_title WHERE post_id = ?;`, [post_id]);
   const delete_post_img_sql = deletePostImgSql(post_id);
-  const Rows = await connection.query(delete_post_sql + delete_post_title_sql + delete_post_img_sql);
+  const delete_comment_sql = mysql.format(`
+    DELETE FROM post_comment WHERE post_id = ?;
+  `,
+    [post_id]); // 게시글 댓글 삭제 sql
+  const Rows = await connection.query(delete_post_sql + delete_post_title_sql + delete_post_img_sql + delete_comment_sql);
 
   return Rows[0][0];
 }
@@ -266,6 +287,84 @@ const searchPostList = async (connection, keyword, post_type, pet_tag) => {
   return contents; // 게시글 리스트 반환
 }
 
+// 게시글 댓글 개수 갱신 sql
+const comment_count_update_sql = (post_id) => {
+  return mysql.format(`
+  UPDATE post SET comment_count = (select count(*) from post_comment where post_id = ?) WHERE post_id = ?;
+  `,
+    [post_id, post_id]
+  );
+}
+
+// 댓글 작성
+const createComment = async (connection, contents) => {
+  const comment_sql = mysql.format(`
+    INSERT into post_comment (post_id, user_id, comment_content, subordination) VALUES (?, ?, ?, ?);
+  `,
+    [contents.post_id, contents.user_id, contents.comment_content, contents.subordination]
+  );
+  const post_sql = comment_count_update_sql(contents.post_id); // 게시글 댓글 개수 업데이트
+
+  const Rows = await connection.query(comment_sql + post_sql);
+
+  return Rows[0][0];
+}
+
+// 댓글 작성자 Id 반환
+const getCommentWriterId = async (connection, comment_id) => {
+  const query = mysql.format(`SELECT user_id FROM post_comment WHERE comment_id = ?;`, [comment_id]);
+  const Rows = await connection.query(query);
+  return Rows[0][0];
+}
+
+// 댓글 수정
+const updateComment = async (connection, contents) => {
+  const Rows = await connection.query(`
+    UPDATE post_comment SET comment_content = ?, updated_time = now() WHERE comment_id = ?;
+  `,
+    [contents.comment_content, contents.content_id]);
+
+  return Rows[0][0];
+}
+
+// 댓글 삭제
+const deleteComment = async (connection, contents) => {
+  const delete_sql = mysql.format(`
+    DELETE FROM post_comment WHERE comment_id = ?;
+  `,
+    [contents.content_id]); // 댓글 삭제
+  const delete_child__sql = mysql.format(`
+    DELETE FROM post_comment WHERE subordination = ?;
+  `,
+    [contents.content_id]); // 종속성이 있는 댓글(답글)들까지 같이 삭제
+  const update_sql = comment_count_update_sql(contents.post_id); // 게시글 댓글 개수 업데이트
+
+  const Rows = await connection.query(delete_sql + delete_child__sql + update_sql);
+
+  return Rows[0][0];
+}
+
+// 게시글 신고
+const reportPost = async (connection, post_id) => {
+  const Rows = await connection.query(`
+    UPDATE post SET report_count = report_count + 1 WHERE post_id = ?;
+    SELECT report_count FROM post WHERE post_id = ?;
+  `,
+    [post_id, post_id]); // 게시글 신고 횟수 1 증가 후 반환
+
+  return Rows[0][1]; // 누적된 게시글 신고 횟수 반환
+}
+
+// 게시글 숨기기
+const hidePost = async (connection, user_id, post_id) => {
+  const Rows = await connection.query(`
+    INSERT INTO post_hide (user_id, post_id) VALUES (?, ?);
+  `,
+    [user_id, post_id]); // 숨김 게시글 추가
+
+  return Rows[0][0];
+}
+
 
 module.exports = {
   selectPostList,
@@ -274,5 +373,11 @@ module.exports = {
   getPostWriterId,
   updatePost,
   deletePost,
+  createComment,
   searchPostList,
+  getCommentWriterId,
+  updateComment,
+  deleteComment,
+  reportPost,
+  hidePost,
 };

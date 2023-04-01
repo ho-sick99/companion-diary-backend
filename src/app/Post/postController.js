@@ -11,7 +11,7 @@ const output = {
     * [GET] /posts/list?ptype&ptag
     */
     getPosts: async (req, res) => {
-        return res.send(await postService.getPostsList(req.query.ptype, req.query.ptag));
+        return res.send(await postService.getPostsList(req.verifiedToken.userId, req.query.ptype, req.query.ptag));
     },
     /*
     * API No. 2
@@ -28,7 +28,7 @@ const output = {
     */
     searchPost: async (req, res) => {
         return res.send(await postService.getSearchPostList(req.query.keyword, req.query.ptype, req.query.ptag))
-    }   
+    }
 }
 
 // POST
@@ -68,6 +68,38 @@ const process = {
 
         return res.send(result);
     },
+    /*
+     * API No. 9
+     * API Name : 댓글 작성
+     * [POST] /posts/comment
+     */
+    postComment: async (req, res) => {
+        const contents = postService.createContents(req.verifiedToken.userId, req.body); // 게시글 콘텐츠 생성
+
+        const result = await postService.createComment(contents); // 댓글 삽입
+
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
+
+        return res.send(result);
+    },
+    /*
+     * API No. 13
+     * API Name : 게시물 숨기기
+     * [POST] /posts/service/:postId
+     */
+    hidePost: async (req, res) => {
+        const result = await postService.hidePost(req.verifiedToken.userId, req.params.postId); // 게시글 숨기기
+
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
+
+        return res.send(result);
+    }
 }
 
 // PUT
@@ -108,6 +140,38 @@ const edit = {
 
         return res.send(result);
     },
+    /*
+     * API No. 10
+     * API Name : 댓글 수정
+     * [PUT] /posts/comment/:commentId
+     */
+    putComment: async (req, res) => {
+        const contents = postService.createContents(req.verifiedToken.userId, req.body, null, req.params.commentId); // 댓글 콘텐츠 생성
+
+        const result = await postService.modifyComment(contents); // 댓글 수정
+
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
+
+        return res.send(result);
+    },
+    /*
+     * API No. 12
+     * API Name : 게시물 신고
+     * [POST] /posts/service/:postId
+     */
+    putReport: async (req, res) => {
+        const result = await postService.reportPost(req.params.postId); // 게시물 신고
+
+        // return 값 확인
+        console.log("----------- return data -------------");
+        console.log(result);
+        console.log("-------------------------------------");
+
+        return res.send(result);
+    }
 }
 
 // DELETE
@@ -119,7 +183,17 @@ const elimination = {
     */
     deletePost: async (req, res) => {
         return res.send(await postService.deletePost(req.verifiedToken.userId, req.params.postId));
-    }
+    },
+    /*
+    * API No. 11
+    * API Name : 댓글 삭제
+    * [GET] /posts/comment/:commentId
+    */
+    deleteComment: async (req, res) => {
+        const contents = postService.createContents(req.verifiedToken.userId, req.body, null, req.params.commentId); // 댓글 콘텐츠 생성
+
+        return res.send(await postService.deleteComment(contents));
+    },
 }
 
 // 모듈 export

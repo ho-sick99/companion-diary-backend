@@ -1,4 +1,3 @@
-const secret_config = require("../../../config/secret");
 const userProvider = require("./userProvider");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response} = require("../../../config/response");

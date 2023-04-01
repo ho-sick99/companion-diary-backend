@@ -27,5 +27,19 @@ module.exports = function (app) {
 
     // 3.8 게시물 검색
     app.get('/posts/search', jwtMiddleware, post.output.searchPost);
+
+    // 3.9 댓글 작성
+    app.post('/posts/comment', jwtMiddleware, post.process.postComment);
+
+    // 3.10 댓글 수정
+    app.put('/posts/comment/:commentId', jwtMiddleware, post.edit.putComment);
+
+    // 3.11 댓글 삭제
+    app.delete('/posts/comment/:commentId', jwtMiddleware, post.elimination.deleteComment);
     
+    // 3.12 게시물 신고
+    app.put('/posts/service/:postId', jwtMiddleware, post.edit.putReport);
+
+    // 3.13 게시물 숨기기
+    app.post('/posts/service/:postId', jwtMiddleware, post.process.hidePost);
 };

@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const secret_config = require('./secret');
 const { response } = require("./response")
 const { errResponse } = require("./response")
 const baseResponse = require("./baseResponseStatus");
