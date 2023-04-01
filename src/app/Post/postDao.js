@@ -38,7 +38,7 @@ const postImgMapping = (post, imgs) => {
   return post;
 }
 
-// 게시글 조회 sql
+// 게시글 리스트 조회 sql
 const get_post_list_sql = {
   // 질문글 리스트 조회 sql
   question_list_sql: (pet_tag) => {
@@ -65,6 +65,7 @@ const get_post_list_sql = {
   },
 }
 
+// 게시글 조회 sql
 const get_post_sql = {
   question_sql: (post_id) => {
     return mysql.format(`
@@ -103,6 +104,14 @@ const selectPostList = async (connection, post_type, pet_tag) => {
   return contents; // 게시글 리스트 반환
 }
 
+const getPostComments = async (connection, post_id) => {
+  return (await connection.query(`
+  SELECT * FROM post_comment WHERE post_id = ?;
+`,
+    [post_id]
+  ))[0];
+}
+
 // 게시글 조회
 const selectPost = async (connection, post_type, post_id) => {
   let post_sql = null;
@@ -113,7 +122,9 @@ const selectPost = async (connection, post_type, post_id) => {
   }
   const post = (await connection.query(post_sql))[0][0]; // 게시글
   const imgs = await selectImageUrls(connection); // 이미지 리스트
+  
   const contents = postImgMapping(post, imgs); // 게시글, 이미지 매핑
+  contents.comments = await getPostComments(connection, post_id);; // 게시글에 작성된 댓글 리스트 삽입
   return contents; // 게시글 반환
 }
 
