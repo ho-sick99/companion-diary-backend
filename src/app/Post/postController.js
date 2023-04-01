@@ -160,7 +160,9 @@ const elimination = {
     * [GET] /posts/comment/:commentId
     */
     deleteComment: async (req, res) => {
-        return res.send(await postService.deleteComment(req.verifiedToken.userId, req.params.commentId));
+        const contents = postService.createContents(req.verifiedToken.userId, req.body, null, req.params.commentId); // 댓글 콘텐츠 생성
+
+        return res.send(await postService.deleteComment(contents));
     },
 }
 

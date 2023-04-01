@@ -140,15 +140,15 @@ exports.createComment = async (contents) => {
 }
 
 // 댓글 삭제
-exports.deleteComment = async (user_id, comment_id) => {
+exports.deleteComment = async (contents) => {
     try {
-        const writer_id = (await postProvider.getCommentWriterId(comment_id)).user_id; // 게시글 작성자 id
+        const writer_id = (await postProvider.getCommentWriterId(contents.content_id)).user_id; // 게시글 작성자 id
 
-        if (writer_id != user_id) { // 현재 유저 id 와 게시글 작성자 id가 불일치
+        if (writer_id != contents.user_id) { // 현재 유저 id 와 게시글 작성자 id가 불일치
             return response(baseResponse.FORBIDDEN);
         }
 
-        await postProvider.deleteComment(comment_id);
+        await postProvider.deleteComment(contents);
 
         return response(baseResponse.SUCCESS);
 

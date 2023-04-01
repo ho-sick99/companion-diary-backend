@@ -98,9 +98,9 @@ exports.modifyComment = async (contents) => {
 };
 
 // 댓글 삭제 메서드
-exports.deleteComment = async (comment_id) => {
+exports.deleteComment = async (contents) => {
   const connection = await pool.getConnection(async (conn) => conn);
-  const result = await postDao.deleteComment(connection, comment_id);
+  const result = await postDao.deleteComment(connection, contents);
   connection.release();
 
   return result;

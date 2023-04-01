@@ -282,9 +282,9 @@ const createComment = async (connection, contents) => {
   `,
     [contents.post_id, contents.user_id, contents.comment_content, contents.subordination]
   );
-  const update_sql = comment_count_update_sql(contents.post_id);
-  
-  const Rows = await connection.query(comment_sql + update_sql);
+  const post_sql = comment_count_update_sql(contents.post_id); // 게시글 댓글 개수 업데이트
+
+  const Rows = await connection.query(comment_sql + post_sql);
 
   return Rows[0][0];
 }
@@ -307,11 +307,18 @@ const updateComment = async (connection, contents) => {
 }
 
 // 댓글 삭제
-const deleteComment = async (connection, comment_id) => {
-  const Rows = await connection.query(`
+const deleteComment = async (connection, contents) => {
+  const delete_sql = mysql.format(`
     DELETE FROM post_comment WHERE comment_id = ?;
   `,
-    [comment_id]);
+    [contents.content_id]); // 댓글 삭제
+  const delete_child__sql = mysql.format(`
+    DELETE FROM post_comment WHERE subordination = ?;
+  `,
+    [contents.content_id]); // 종속성이 있는 댓글(답글)들까지 같이 삭제
+  const update_sql = comment_count_update_sql(contents.post_id); // 게시글 댓글 개수 업데이트
+
+  const Rows = await connection.query(delete_sql + delete_child__sql + update_sql);
 
   return Rows[0][0];
 }
