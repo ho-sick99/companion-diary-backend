@@ -111,7 +111,9 @@ const selectPostList = async (connection, user_id, post_type, pet_tag) => {
 // 게시글 댓글 리스트 반환
 const getPostComments = async (connection, post_id) => {
   return (await connection.query(`
-  SELECT * FROM post_comment WHERE post_id = ?;
+    SELECT post_comment.*, user.user_nickname 
+    FROM post_comment, user 
+    WHERE post_comment.post_id = ? and post_comment.user_id = user.user_id;
   `,
     [post_id]
   ))[0];
