@@ -21,13 +21,13 @@ exports.removeUserData = async function (user_id) {
 
 exports.getPetList = async function (user_id) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const result = await userDao.selectUsersAllPetList(connection, user_id);
+  let result = await userDao.selectUsersAllPetList(connection, user_id);
   connection.release();
 
   result = result.map((contents) => {
     contents.pet_profile_img = process.env.IMAGE_URL + contents.pet_profile_img
   })
-  
+
   return result;
 };
 
