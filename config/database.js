@@ -1,6 +1,5 @@
 const mysql = require('mysql2/promise');    // promise api => ws7 async await와 잘 동작함
 const { logger } = require('./winston');
-const tunnel = require('tunnel-ssh');
 
 // TODO: 본인의 DB 계정 입력
 const pool = mysql.createPool({
