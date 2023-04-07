@@ -15,7 +15,7 @@ const postListImgMapping = (posts, imgs) => {
   for (let i = 0; i < imgs.length; i++) { // 이미지 리스트 순회
     const current_img_post_id = imgs[i].post_id; // 현재 탐색중인 이미지의 post_id
     if (current_img_post_id <= url_memo.length) { // 현재 탐색중인 이미지의 post_id가 마지막 게시글(질문글 or 자랑글)의 post_id를 초과하지 않을 때
-      url_memo[current_img_post_id - 1].push("uploads/" + imgs[i].img_url); // 게시글에 해당하는 메모 배열의 원소에 이미지 url 매핑
+      url_memo[current_img_post_id - 1].push(process.env.IMAGE_URL + imgs[i].img_url); // 게시글에 해당하는 메모 배열의 원소에 이미지 url 매핑
     }
   }
 
@@ -31,7 +31,7 @@ const postImgMapping = (post, imgs) => {
   post.img_url = []
   for (let i = 0; i < imgs.length; i++) {
     if (imgs[i].post_id == post.post_id) {
-      post.img_url.push("uploads/" + imgs[i].img_url);
+      post.img_url.push(process.env.IMAGE_URL + imgs[i].img_url);
     }
   }
   return post;
