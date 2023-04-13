@@ -16,7 +16,7 @@ const diaryListImgMapping = (diarys, imgs) => {
   for (let i = 0; i < imgs.length; i++) { // 이미지 리스트 순회
     const current_img_post_id = imgs[i].diary_id; // 현재 탐색중인 이미지의 post_id
     if (current_img_post_id <= url_memo.length) { // 현재 탐색중인 이미지의 post_id가 마지막 게시글(질문글 or 자랑글)의 post_id를 초과하지 않을 때
-      url_memo[current_img_post_id - 1].push("uploads/" + imgs[i].img_url); // 게시글에 해당하는 메모 배열의 원소에 이미지 url 매핑
+      url_memo[current_img_post_id - 1].push(process.env.IMAGE_URL + imgs[i].img_url); // 게시글에 해당하는 메모 배열의 원소에 이미지 url 매핑
     }
   }
 
@@ -32,12 +32,15 @@ async function selectFromAllDiaryList(connection, select_date_start, select_date
     SELECT diary.*, pet.pet_name, pet.pet_profile_img, pet.pet_tag
     FROM diary, pet 
     WHERE diary.pet_id = pet.pet_id
-    and diary.date BETWEEN ? AND ?
+    and diary.created_time BETWEEN ? AND ?
     and diary.user_id = ?;
   `, [select_date_start, select_date_end, user_id]);
   const diarys = (await connection.query(diary_sql))[0]; // 일기 리스트
   const imgs = await selectImageUrls(connection); // 이미지 리스트
-  const contents = diaryListImgMapping(diarys, imgs); // 게시글, 이미지 매핑
+  let contents = []
+  if (diarys.length > 0) { // 게시글이 존재한다면
+    contents = diaryListImgMapping(diarys, imgs); // 게시글, 이미지 매핑
+  }
 
   return contents;
 }
@@ -71,7 +74,7 @@ async function insertIntoDiary(connection, contents) {
   const diary_id = await getLastDiaryId(connection);
   const diary_sql = mysql.format(`
     INSERT INTO diary 
-    (diary_id, pet_id, user_id, date, diary_title, diary_content) 
+    (diary_id, pet_id, user_id, created_time, diary_title, diary_content) 
     VALUES (?, ?, ?, ?, ?, ?); 
   `,
     [diary_id, contents.pet_id, contents.user_id, contents.date, contents.diary_title, contents.diary_content]);
@@ -113,7 +116,7 @@ const deleteDiaryImgSql = (diary_id) => {
 // 일기 수정
 async function updateSetDiary(connection, contents) {
   await connection.query(deleteDiaryImgSql(contents.content_id)); // 현재 일기와 연관된 이미지들 삭제
-  const diary_update_query = mysql.format(`UPDATE diary SET pet_id = ?, date = ?, diary_title = ?, diary_content = ? WHERE diary_id = ?;`, [contents.pet_id, contents.date, contents.diary_title, contents.diary_content, contents.content_id]);
+  const diary_update_query = mysql.format(`UPDATE diary SET pet_id = ?, updated_time = now(), diary_title = ?, diary_content = ? WHERE diary_id = ?;`, [contents.pet_id, contents.diary_title, contents.diary_content, contents.content_id]);
   const diary_img_sql = insertDiaryImgSql(contents.content_id, contents.imagesPath); // 업데이트된 내용 + 새로운 이미지
 
   const Rows = await connection.query(diary_update_query + diary_img_sql);
@@ -132,8 +135,8 @@ async function deleteFromDiary(connection, diary_id) {
 
 // 월별 일기 날짜 리스트 불러오기
 async function selectDistinctFromDate(connection, user_id, select_date_start, select_date_end) {
-  const query = mysql.format(`SELECT DISTINCT DATE_FORMAT(date, '%d') AS "day"
-   FROM diary WHERE date BETWEEN ? AND ? AND user_id = ?;`, [select_date_start, select_date_end, user_id]);
+  const query = mysql.format(`SELECT DISTINCT DATE_FORMAT(created_time, '%d') AS "day"
+   FROM diary WHERE created_time BETWEEN ? AND ? AND user_id = ?;`, [select_date_start, select_date_end, user_id]);
   const Rows = await connection.query(query);
 
   return Rows[0];
