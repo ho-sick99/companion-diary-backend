@@ -25,8 +25,8 @@ exports.getPetList = async function (user_id) {
   connection.release();
 
   result = result.map((contents) => {
-    contents.pet_profile_img = process.env.IMAGE_URL + contents.pet_profile_img
-    return contents
+    contents.pet_profile_img = process.env.IMAGE_URL + contents.pet_profile_img;
+    return contents;
   })
 
   return result;

@@ -37,7 +37,10 @@ async function selectFromAllDiaryList(connection, select_date_start, select_date
   `, [select_date_start, select_date_end, user_id]);
   const diarys = (await connection.query(diary_sql))[0]; // 일기 리스트
   const imgs = await selectImageUrls(connection); // 이미지 리스트
-  const contents = diaryListImgMapping(diarys, imgs); // 게시글, 이미지 매핑
+  let contents = []
+  if (diarys.length > 0) { // 게시글이 존재한다면
+    contents = diaryListImgMapping(diarys, imgs); // 게시글, 이미지 매핑
+  }
 
   return contents;
 }
