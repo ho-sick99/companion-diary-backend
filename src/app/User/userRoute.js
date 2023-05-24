@@ -3,7 +3,12 @@ const { upload } = require("../../../config/multer");
 module.exports = function(app){
     const user = require('./userController');
     const jwtMiddleware = require('../../../config/jwtMiddleware');
-
+    
+    // Test
+    app.post('/test', (req, res) => {
+        return res.send(req.body);
+    });
+    
     // 1.1 사용자 정보 가져오기
     app.get('/users', jwtMiddleware, user.getUsers);
 
