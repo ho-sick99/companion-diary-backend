@@ -5,7 +5,7 @@ module.exports = function(app){
     const jwtMiddleware = require('../../../config/jwtMiddleware');
     
     // Test
-    app.post('/test', (req, res) => {
+    app.post('/test', async (req, res) => {
         return res.send(req.body);
     });
     
